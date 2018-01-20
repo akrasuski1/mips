@@ -33,7 +33,7 @@ than the alternatives. ALSH algorithm gave very poor results on Amazon-3M and Wi
 datasets --- apparently sift vectors have some regularity that ALSH could exploit better.
 Still, the precision did not exceed approximately $0.60$ for reasonable speedups even on
 this dataset. Finally, the quantization-based algorithm, although it was able to give
-reasonable precision, it was so slow, that the only dataset it did not time 
+reasonable precision, it was so slow, that the only dataset it did not time
 out\footnote{Timeout was set to twice the time of brute force search.}
 was siftsmall dataset. It contained only ten thousand vectors though and was included
 just for completion.
@@ -62,12 +62,12 @@ number of layers (for example, KMeans-2 means $K$-Means with two layers).
 
 From these graphs, we can see that in general IVF is approximately $30\% - 50\%$ faster
 (on horizontal axis) than $K$-Means when using just a single layer. Both algorithms are
-equivalent in this case, so this means Faiss library is more optimized for this parameter 
+equivalent in this case, so this means Faiss library is more optimized for this parameter
 choice\footnote{
 Checking its source we can see it performs inner products of each query with all centroids
-(from the first and only layer) all at once, before continuing to answer each query 
+(from the first and only layer) all at once, before continuing to answer each query
 using its candidates. This allows one to use heavily optimized matrix-matrix multiplication
-routines for the first phase, with additional memory locality advantages. 
+routines for the first phase, with additional memory locality advantages.
 In principle, this optimization
 could be implemented for hierarchical $K$-Means as well (for the first layer only).
 }.
@@ -139,18 +139,18 @@ it with previous graphs.
 \end{figure}
 
 The charts are quite noisy, since there is some random factor involved. Still,
-let us consider two-layer case. On the previous graphs, we could see 
-$n_{train} = 5$ was dominating for times in range approximately 0.02 to 
+let us consider two-layer case. On the previous graphs, we could see
+$n_{train} = 5$ was dominating for times in range approximately 0.02 to
 0.04 (fraction of full search time). Now, looking at time vs. $n_{query}$ graph,
 we get that range of $n_{query}$ corresponding to that time range is about
 3 to 10. Similarly, for $n_{train} = 30$, time range is about 0.04 to 0.12
 (though the upper limit is hard to tell due to noise), with corresponding
 $n_{query}$ range of about 10 to 60. In both cases, the $n_{query}$ range we
-get is centered near $n_{train}$, meaning that for optimal 
-$(n_{train}, n_{query})$ choices, both parameters are approximately 
+get is centered near $n_{train}$, meaning that for optimal
+$(n_{train}, n_{query})$ choices, both parameters are approximately
 equal\footnote{
 Note that the graphs only show a few chosen values of $n_{train}$. Plotting
-more values would narrow their non-domination range, strengthening the 
+more values would narrow their non-domination range, strengthening the
 stated assumption. We did not do this due to graph readability issues
 (lines being hard to tell apart).
 }.

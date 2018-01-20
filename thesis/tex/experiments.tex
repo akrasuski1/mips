@@ -1,5 +1,3 @@
-% TODO: fill all \texttt{TODO: cite}
-
 \section{Experimental Design}
 
     We've conducted extensive experiments to evaluate performance of our algorithms. We've used
@@ -19,7 +17,7 @@
         \texttt{Precision-@}$k$ can be intuitively described as a
         \textit{"number of relevant items in the list of $k$ returned items, divided by $k$".}
 
-        More formally, given a vector of scores assigned to each item $\hat{\mathbf y} \in {\cal{R}}^{L}$, and a
+        More formally, given a vector of scores assigned to each item $\hat{\mathbf y} \in {\mathcal{R}}^{L}$, and a
         binary vector indicating which items are relevant $\mathbf y \in \left\lbrace 0, 1 \right\rbrace^L$
         we can write
 
@@ -44,7 +42,7 @@
         main purpose was to allow for evaluation of (approximate) \texttt{knn} algorithms.
 
         For these datasets a set of $n$ "databse" vectors is given with dimensionality
-        $d=128$, as well as a set of "query" vectors $\in \cal{R}^d$
+        $d=128$, as well as a set of "query" vectors $\in \mathcal{R}^d$
         and the "groundtruth" indices. For every "query" vector there are $100$ "groundtruth" indices
         that point to the closest (according to $L_2$ distance) vectors in the database.
 
