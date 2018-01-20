@@ -1,10 +1,40 @@
 \section{Experimental Design}
 
+    We've conducted extensive experiments to evaluate performance of our algorithms. We've used
+    four different datasets, described in detail in section~\ref{sec:datasets}, and compared
+    our implementation with a highly-optimized, open source \texttt{FAISS} library released by
+    \texttt{Facebook AI Research} group.
 
     \subsection{Evaluation metrics}
 
+        We have compared the algorithms according to two metrics -- \texttt{test-time}
+        and \texttt{precision@}$k$.
 
-    \subsection{Datasets}
+        \texttt{Test-time} is defined simply as a number of seconds it takes the index to return
+        top-$100$ (approximate) nearest neighbours for each vector in a set of queries provided by the user.
+        We assume that queries are available as a contiguous chunk of data kept in-memory.
+
+        \texttt{Precision-@}$k$ can be intuitively described as a
+        \textit{"number of relevant items in the list of $k$ returned items, divided by $k$".}
+
+        More formally, given a vector of scores assigned to each item $\hat{\mathbf y} \in {\cal{R}}^{L}$, and a
+        binary vector indicating which items are relevant $\mathbf y \in \left\lbrace 0, 1 \right\rbrace^L$
+        we can write
+
+        \begin{equation}
+            \text{P}@k := \frac{1}{k} \sum_{l\in \text{rank}_k (\hat{\mathbf y})} \mathbf y_l
+        \end{equation}
+
+        where $\text{rank}_k(\mathbf y)$ returns the $k$ largest indices of $y$ ranked in descending order.
+
+        We have decided not to focus on the training time of the evaluated indices. This
+        descision is motivated by the fact, that in most practical use-cases, where
+        approximate inference methods will be used, the training time is a one-time cost that
+        often can be amortized (e.g by using more compute-power).
+        Inference in these cases, however, is the time-sensitive component
+        that cannot be easily sped-up (e.g the inference happens on a mobile device, or a small web-server).
+
+    \subsection{Datasets}\label{sec:datasets}
 
 
     \subsection{Parameter grid}
