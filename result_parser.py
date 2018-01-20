@@ -297,6 +297,7 @@ def main():
         plt.savefig("graphs/kmeans-specific/time-prec-%s-%s.eps" % (ds, par.layers))
         plt.savefig("graphs/kmeans-specific/time-prec-%s-%s.png" % (ds, par.layers))
 
+        plt.rcParams.update({'font.size': 12})
         plt.clf()
         lines = []
         for arr, np in zip(arrx, nprobes):
@@ -324,4 +325,5 @@ def main():
         plt.savefig("graphs/kmeans-specific/test-time-%s-%s.png" % (ds, par.layers))
 
 if __name__ == "__main__":
+    plt.rcParams.update({'font.size': 15})
     main()
