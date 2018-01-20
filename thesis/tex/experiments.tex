@@ -1,3 +1,5 @@
+% TODO: fill all \texttt{TODO: cite}
+
 \section{Experimental Design}
 
     We've conducted extensive experiments to evaluate performance of our algorithms. We've used
@@ -36,11 +38,67 @@
 
     \subsection{Datasets}\label{sec:datasets}
 
+        We have used four datasets to evaluate performance of our algorithms.
 
-    \subsection{Parameter grid}
+        Two of them, \texttt{SIFT} and \texttt{SIFTsmall} were introduced in \texttt{TODO: cite} and their
+        main purpose was to allow for evaluation of (approximate) \texttt{knn} algorithms.
+
+        For these datasets a set of $n$ "databse" vectors is given with dimensionality
+        $d=128$, as well as a set of "query" vectors $\in \cal{R}^d$
+        and the "groundtruth" indices. For every "query" vector there are $100$ "groundtruth" indices
+        that point to the closest (according to $L_2$ distance) vectors in the database.
+
+        First of all, for every query, we consider only the first vector in the groundtruth as relevant.
+        Secondly, we recompute the groundtruth indices so that they're sorted accroding to inner-product
+        metric.
+
+        For the two remaining datasets, we have used \texttt{Wiki-LSHTC} \texttt{TODO: cite} and \texttt{Amazon-3m}
+        \texttt{TODO: cite} datasets, publicly available at \texttt{TODO: cite}.
+
+        Given the scope of our thesis, they are certainly the most interesting from the machine learning perspective,
+        but at the same time pose several challanges.
+
+        The reason these datasets are more meaningfull than \texttt{SIFT} is because they allow us to test our
+        algorithms in a real-world setting, where there is a linear model trained to perfrom a multilabel
+        classification, for which inference procedure has to be sped up.
+
+        This means that we need to first build a decent classifier, then plug in our approximate algorithms,
+        and finally benchmark the whole system.
+
+        We note that there are some constraints when it comes to the choice of the classifier. The first condition
+        is that the model should be bottlenecked by a large number of inner products that have to be performed during
+        inference step. The second is that these inner products should only deal with dense vectors, since both
+        out algorithms and reference \texttt{FAISS} library can only cope with such representations.
+
+        We have experimented with several models, including deep neural networks, but finally decided to use
+        \texttt{TODO: cite} \texttt{FastText} classifier. It's a very simple, yet powerfull architecture, that
+        can be efficiently trained on very large datasets. It's speed comes from the fact that it uses an efficient,
+        asynchronous, 1-bit stochastic gradient descent, and doesn't compute full softmax over the output space,
+        but approximates it with a negative sampling \texttt{TODO: cite}.
+
+        \texttt{FastText} takes an input example in a form of a sparse vector (in our case, each index in that vector
+        represents a word in the input sentence), and computes its hidden, dense representation. Then, this
+        representation is multiplied with a weight vector for each output class, giving us final predictions.
+        This last step is exactly the \texttt{MIPS} problem we are discussing in this work.
+
+        Naturally, we wanted to use our approximate algorithms to avoid computing dot product between a hidden
+        representation and a weight vector for each class. To be sure that our timings are as accurate as possible,
+        we decided to not plug our methods directly into the model. Instead, we first computed the hidden representation
+        for each example in the dataset, and saved those to disk. For each example we also saved a set of
+        true labels associated with this example. These were our "relevant" classes for each item.
+        Finally, we extracted the weight vectors associated with each class, and saved those as well. Givent this setup,
+        it was now straightforwad to perfom experiments -- we just treated the weight vectors as our database vectors,
+        and hidden representations as query vectors.
+
+        For completeness, below we summarize the descriptive statistics of the used datasets.
+
+        WRITEME(elan): tabel with dataset stats
 
 
     \subsection{Baseline (IVF)}
+
+
+    \subsection{Parameter grid}
 
 
     \subsection{Amazon}
