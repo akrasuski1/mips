@@ -95,8 +95,48 @@
 
     \subsection{Baseline (IVF)}
 
+        We have compared our implementations with a highly-optimized \texttt{FAISS} (TODO) library.
+        Specifically, we have decided to use the \texttt{Inverted-File-Index} algorithm it provides.
+
+        This choice was motivated by two things.
+        Firstly, the authors of the library have empirically determined that this algorithm performs
+        really well in settings similar to ours -- where we are not memory constrained, and whole dataset
+        can fit in memory.
+        Secondly, this algorithm is a special case of our \texttt{Hierarchichal K-means}, specifically
+        it is equivalent to \texttt{hierarchical k-means} with number of levels set to $!$.
 
     \subsection{Parameter grid}
 
+        After an initial round of manual tests we have gained a pretty good understanding of
+        each algorithm, and were able to design a grid of sensible parameters for each of them.
+
+        For \texttt{Hierarchical K-means} the core parameters are of course the depth of the hierarchy
+        (we have experimented with up to depth of $4$), number of centroids on each level,
+        and the number of nodes that are expanded during search procedure.
+
+        For \texttt{Asymmetric LSH} the most important parameters were number of hash tables ($L$),
+        and number of hash functions $K$. The rest of the parameters was mostly kept fixed, following
+        recommendations of the original ALSH paper.
+
+        For \texttt{Quantization} we have varied the number of subspaces as well as number of centroids
+        in each subspace.
+
+        For a more detailed explanation of the parameters mentioned above, please see the sections
+        dedicated to each of the algorithms.
+        We provide the exact parameters used in the Appendix (TODO).
 
     \subsection{Amazon}
+
+        All of our experiments were conducted using \texttt{Amazon Web Services} infrastructure.
+        More concretely we have used compute-optimized \texttt{c4.4xlarge} instances. Each such
+        instance provides $16$ virtual cores and $30$ gigabytes of \texttt{RAM}, and is powered
+        by an \texttt{Intel Xeon E5-2666 v3 (Haswell)} processor optimized specifically for AWS.
+
+        We have provisioned around $40$ machines, which allowed us to evaluate our parameter grid
+        in just few days.
+        At the same time, however, it was unfesable to manage this number of machines manually.
+        To overcome this problem, we have prepared a simple scheduler,
+        that would take a grid of parameters and list of machines as inputs, and schedule
+        jobs to be executed on those machines.
+        An \texttt{ssh} tunnel was then established with each machine so that scheduler
+        was able to request a job execution, and a machine was able report the evaluation results.
