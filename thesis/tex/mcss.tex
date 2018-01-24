@@ -1,17 +1,20 @@
-In MIPS we are usually given a large set $S$ of vectors (also called a database) and a set of queries
+In MIPS we are usually given a large set $S$ of data vectors (also called a database) and a set of queries
 (which are vectors as well). Single query is denoted by $q$.
 These vectors are often high dimensional --- the number of dimensions can be in range of hundreds or thousands.
 Every vector from database and every query represents an object with a number of features equal to the number of dimensions.
-The essence of MIPS is for each query to retrieve a fixed number (denoted by $k$)
-of objects from database that resemble the query most.
-Values of $k$ are typically ranging from $5$ to $100$.
+The essence of MIPS is for each query to retrieve a fixed number (denoted by $k$, typically ranging
+from $5$ to $100$)
+of objects from database that are most similar to query.
 The retrieval process is also called querying or prediction.
 
-All vectors should be prepared in such a way that the higher inner product between them is, the more similar they are
- --- inner product is the similarity metric here. Having said that, the goal is to find $y$ complying with the condition
-\[ y = \argmax_{x \in S} q^T x \]
-\remark{Problem należy tak sformalizować, aby był on zgodny z Waszym opisem, w którym szukany jest zbiór obiektów, a nie pojedynczy $y$}
+All vectors should be prepared in such a way that the higher inner product between them is, 
+the more similar objects they represent are
+ --- so inner product is the similarity metric of data vectors. 
+Having said that, the goal is to find
 
+$$ Q = \text{argmax}_{x \in S}^{(k)} \ q^T x $$
+
+which means set of $k$ data vectors maximizing inner product with query $q$.
 
 The MIPS problem is closely related to Maximum Cosine
 Similarity Search (MCSS) and Nearest Neighbour Search (NNS).
@@ -24,10 +27,10 @@ of transforming data and query vectors in order to transform the MIPS problem to
 transformations, one introduced by Shrivastava and Li \cite{alsh}, and the second by
 Neyshabur and Srebro \cite{neyshabur}.
 
-The first transformation has two parameters: $m$ and $0 < U < 1$. All queries
+The first transformation has two parameters: $m$ and $U$, such that $0 < U < 1$. All queries
 are first normalized, and all vectors divided by the same number such that
-their norm is smaller than $U$. Neither of these changes
-$$ \argmin_{i}\ x_i \cdot q\,.$$ 
+their norm is smaller than $U$. Neither of these changes affect
+$ \argmin_{i}\ x_i \cdot q\,.$
 Then, the following transformations are applied to data
 and query vectors:\footnote{In other papers, the $\frac{1}{2}$ fractions are
 instead moved to $x'$, for example $\frac{1}{2} - ||x||^2$, leaving extra
@@ -46,10 +49,9 @@ MIPS problem, as long as $m$ is sufficiently large:
 & = & ||x||^2 + ||q||^2 - 2 q \cdot x + ||x||^{2^{m+1}} + \frac{m}{4} - ||x||^2 \\
 & = & 1 + \frac{m}{4} - 2 q \cdot x + ||x||^{2^{m+1}} \,.
 \end{eqnarray*}
-\remark{Co się dzieje z $||q||^2$?}
 
 In the above $1 + \frac{m}{4} $ is a constant, so it does not change the NNS solution. Similarly  the last term, 
-$||x||^{2^{m+1}}$,  which quickly vanishes as $m \to \infty$, so it can be skipped
+$||x||^{2^{m+1}}$, quickly vanishes as $m \to \infty$, so it can be skipped
 as an approximation. Shrivastava suggests using $m \ge 3$ for good results.
 This leaves just the $ - 2 q \cdot x $ term, which is, up to a multiplicative
 constant, the metric optimized in MIPS.
