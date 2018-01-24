@@ -61,7 +61,7 @@ $x_N$ & $A_{1,N}$ & $A_{2,N}$ & $\cdots$ & $A_{M,N}$ \\
 
 $K$-means clustering mentioned above means that vectors are quantized at the level of parts
 and the whole vector is represented by approximations of its parts.
-This clustering procedure is expressed by pseudocode in Algorithm 5.
+This clustering procedure is expressed by pseudocode in Algorithm~\ref{alg:quant-cluster}.
 
 \begin{algorithm}
 	\caption{Quantization-based clustering}
@@ -80,6 +80,7 @@ This clustering procedure is expressed by pseudocode in Algorithm 5.
 			\State $C_i = \{C_{i,1}, C_{i,2}, \dots, C_{i,m}\}, A_i = \{A_{i,1}, A_{i,2}, \dots, A_{i,N}\} \gets$ Kmeans($P_i, M$)
 		\EndFor
 	\end{algorithmic}
+\label{alg:quant-cluster}
 \end{algorithm}
 
 The score of a vector (how related it is to query) is computed as a sum of inner products
@@ -109,7 +110,7 @@ $ q_1^T C_{1,m} $ & $ q_2^T C_{2,m} $ & $ \cdots $ & $ q_M^T C_{M,m} $\\
 The inner product approximation for vector $x_l$ is then:
 $$q \cdot x_l \approx \sum_{i=1}^{M} T_{i,A_{i,l}} = \sum_{i=1}^{M} q_i^T C_{i,A_{i,l}} $$
 In the end, certain number of vectors with highest approximations is reported.
-The querying phase is presented in Algorithm 6.
+The querying phase is presented in Algorithm~\ref{alg:quant-query}.
 For each vector $x_l$, $l = 1,2,...,N$, squared error arising from clustering can be expressed in the following way:
 $$ \sum_{i=1}^{M}  [q_{i}^{T} (C_{i, A_{i,l}} - p_{l,i})]^2$$
 
@@ -131,6 +132,7 @@ $$ \sum_{i=1}^{M}  [q_{i}^{T} (C_{i, A_{i,l}} - p_{l,i})]^2$$
 		\EndFor
 		\State \Return $\argmax_{l}$ Result[$l$]
 	\end{algorithmic}
+\label{alg:quant-query}
 \end{algorithm}
 
 The runtime of this query algorithm is a sum of time taken for building the $T$ table and calculating the inner product of each vector with the query using $T$ as a lookup table.
