@@ -1,11 +1,11 @@
-\section{Experimental Design}
+\section{Experimental Design}\label{sec:experimentalDesign}
 
     We've conducted extensive experiments to evaluate performance of our algorithms. We've used
-    four different datasets, described in detail in section~\ref{sec:datasets}, and compared
-    our implementation with a highly-optimized, open source \texttt{FAISS} library released by
+    four different datasets, described in detail in section~\ref{subsec:datasets}, and compared
+    our implementation with a highly-optimized, open source \texttt{FAISS} library~\cite{faiss} released by
     \texttt{Facebook AI Research} group.
 
-    \subsection{Evaluation metrics}
+    \subsection{Evaluation metrics}\label{subsec:evaluationMetrics}
 
         We have compared the algorithms according to two metrics -- \texttt{test-time}
         and \texttt{precision@}$k$.
@@ -34,12 +34,13 @@
         Inference in these cases, however, is the time-sensitive component
         that cannot be easily sped-up (e.g the inference happens on a mobile device, or a small web-server).
 
-    \subsection{Datasets}\label{sec:datasets}
+    \subsection{Datasets}\label{subsec:datasets}
 
         We have used four datasets to evaluate performance of our algorithms.
 
-        Two of them, \texttt{SIFT} and \texttt{SIFTsmall} were introduced in \texttt{TODO: cite} and their
-        main purpose was to allow for evaluation of (approximate) \texttt{knn} algorithms.
+        Two of them, \texttt{SIFT} and \texttt{SIFTsmall} were introduced in~\cite{jegou2011product} and their
+        main purpose was to allow for evaluation of (approximate) \texttt{knn} algorithms. They are freely
+        available for download at~\cite{sift}
 
         For these datasets a set of $n$ "databse" vectors is given with dimensionality
         $d=128$, as well as a set of "query" vectors $\in \mathcal{R}^d$
@@ -50,8 +51,8 @@
         Secondly, we recompute the groundtruth indices so that they're sorted accroding to inner-product
         metric.
 
-        For the two remaining datasets, we have used \texttt{Wiki-LSHTC} \texttt{TODO: cite} and \texttt{Amazon-3m}
-        \texttt{TODO: cite} datasets, publicly available at \texttt{TODO: cite}.
+        For the two remaining datasets, we have used \texttt{Wiki-LSHTC}~\cite{lshtc} and
+        \texttt{Amazon-3m}~\cite{a3m} datasets, publicly available at~\cite{exrepo}.
 
         Given the scope of our thesis, they are certainly the most interesting from the machine learning perspective,
         but at the same time pose several challanges.
@@ -68,11 +69,11 @@
         inference step. The second is that these inner products should only deal with dense vectors, since both
         out algorithms and reference \texttt{FAISS} library can only cope with such representations.
 
-        We have experimented with several models, including deep neural networks, but finally decided to use
-        \texttt{TODO: cite} \texttt{FastText} classifier. It's a very simple, yet powerfull architecture, that
+        We have experimented with several models, including deep neural networks, but finally decided to
+        use \texttt{FastText}~\cite{fasttext} classifier. It's a very simple, yet powerfull architecture, that
         can be efficiently trained on very large datasets. It's speed comes from the fact that it uses an efficient,
         asynchronous, 1-bit stochastic gradient descent, and doesn't compute full softmax over the output space,
-        but approximates it with a negative sampling \texttt{TODO: cite}.
+        but approximates it with a negative sampling~\cite{w2v}.
 
         \texttt{FastText} takes an input example in a form of a sparse vector (in our case, each index in that vector
         represents a word in the input sentence), and computes its hidden, dense representation. Then, this
@@ -88,14 +89,29 @@
         it was now straightforwad to perfom experiments -- we just treated the weight vectors as our database vectors,
         and hidden representations as query vectors.
 
-        For completeness, below we summarize the descriptive statistics of the used datasets.
+        For completeness, below we summarize the descriptive statistics of the used datasets in table~\ref{tab:dsz}
 
-        WRITEME(elan): tabel with dataset stats
+        \begin{table}
+          \caption{Data statistics. $d$ is the dimensionality of the feature vectors. For Wiki and Amazon this
+          is the dimensionality of fasttext hidden representation. $L$ is the number
+          of database vectors (for wiki and amazon this is the number of labels). $n$ is the number of query vectors}
+          \label{tab:dsz}
+          \centering
+          {
+          \begin{tabular}{l|c|c|c|}
+            Dataset & $d$ &$L$& $n$ \\
+            \hline
+            siftsmall   & $128$ & $10000$   & $100$    \\
+            sift        & $128$ & $1000000$ & $10000$  \\
+            Wiki-LSHTC  & $256$ & $325056$  & $587084$ \\
+            Amazon-3m   & $256$ & $2812281$ & $742507$ \\
+          \end{tabular}
+          }
+        \end{table}
 
+    \subsection{Baseline (IVF)}\label{subsec:baselineivf}
 
-    \subsection{Baseline (IVF)}
-
-        We have compared our implementations with a highly-optimized \texttt{FAISS} (TODO) library.
+        We have compared our implementations with a highly-optimized \texttt{FAISS}~\cite{faiss} library.
         Specifically, we have decided to use the \texttt{Inverted-File-Index} algorithm it provides.
 
         This choice was motivated by two things.
@@ -103,9 +119,9 @@
         really well in settings similar to ours -- where we are not memory constrained, and whole dataset
         can fit in memory.
         Secondly, this algorithm is a special case of our \texttt{Hierarchichal K-means}, specifically
-        it is equivalent to \texttt{hierarchical k-means} with number of levels set to $!$.
+        it is equivalent to \texttt{hierarchical k-means} with number of levels set to $1$.
 
-    \subsection{Parameter grid}
+    \subsection{Parameter grid}\label{subsec:parameterGrid}
 
         After an initial round of manual tests we have gained a pretty good understanding of
         each algorithm, and were able to design a grid of sensible parameters for each of them.

@@ -3,7 +3,10 @@
 
 Our library contains a number of dependencies. Most importantly, the core components rely on 
 another library for \textit{Approximate Similarity Search}, Faiss \cite{faiss}.
-Faiss in turn depends on Basic Linear Algebra Subprograms (BLAS) being available.
+Faiss in turn depends on Basic Linear Algebra Subprograms (BLAS) being available. In our experiments we have used
+the \texttt{OpenBLAS} \cite{openblas} implementation, as it is fully open-source and easiest to install. One
+could obtain slightly improved performance with proprietary \texttt{MKL} \cite{mkl} implementation, but this would require
+users to perform extra installtion steps.
 
 Additionally, the Python parts of our code rely on several components: \texttt{pybind11} and \texttt{swig}
 for bindings generation, standard data-science tools like \texttt{pandas} for data analysis, and naturally, on the
@@ -31,16 +34,26 @@ so that it can be used for highly optimized Faiss functions.
 
 \subsection{Wrapping C++ with Python}
 
-WRITEME
+We have used \texttt{pybind11}\cite{pybind11} library to create wrappers around our C++ code. We chose \texttt{pybind11}
+due to several reasons: it supports a wide range of \texttt{C++} constructs
+(including classes, lambdas, and smart pointers), can generate wrappers for multiple python versions and
+implementations (including Python 2.7, 3.x, and PyPy (PyPy2.7 >= 5.7)), and works nicely with \texttt{numpy} arrays.
+Additionally, one needs to provide only a single \texttt{C++} source file to create these wrappers, which is
+a big advantage compared to e.g. \texttt{SWIG}.
 
-memory management
+\texttt{numpy} is an extremely popular Python library for scientific computing, and is the backbone of all
+machine learning libraries in use today. NumPy’s main object is the homogeneous multidimensional array, which
+can be used to hold for example weights of a trained classifier. If we wanted to use our C++ indexes on such
+objects, it was crucial to be able to pass them without copying the underlying storage.
 
-passing arrays
+Luckily it is quite straightforward in \texttt{pybind11} to write wrappers that can accept a \texttt{numpy} array
+and extract a raw \texttt{C} pointer to its data. Conversely, it is also straightforward to create
+a \texttt{numpy} array from a raw pointer returned by a \texttt{C} function. This array is then able to take the
+ownership of this pointer and realease it upon being garbage collected.
 
-\subsection{Interfaces}
-
-We use \texttt{pybind11} to provide an easy-to-use interface
-TODO (we don't have any fucking interface)
+In all of our function we release the \texttt{GIL} -- Python's Global Interpreter Lock. This means that while our
+\texttt{C++} is executing, Python interpreter is free to run other tasks. Once our \texttt{C++} code returns, the
+interpreter lock is re-aquired.
 
 \subsection{Internal API}
 
@@ -65,12 +78,4 @@ should reset the index to the default state.
 may perform additional tuning of the index on \texttt{n} points present in \texttt{data}. This is
 optional, and in fact we leave this function empty.
 
-\end{itemize}
-
-Regarding code conventions, we apply the following:
-
-\begin{itemize}
-\item All objects are C++ structs, and all fields are public.
-\item Classes are copy-constructable. [todo check this - no w sumie nie, przez ten wskaźnik na augmentację. Ale po co to? Kopiowanie indeksu to strata czasu.]
-\item All classes have a constructor without parameters that initializes parameters to some reproducible default. [todo - A po co to?]
 \end{itemize}
