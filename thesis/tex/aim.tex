@@ -1,15 +1,14 @@
 \section{Aim and scope of the thesis}
 
-The aim of this thesis is to describe a library for fast, approximate \textit{maximum inner product search} (MIPS),
-which we created as part of our dissertation.
+\remark{The aim of this thesis is to develop a library for fast, approximate \textit{maximum inner product search} (MIPS).}
 
-The goal of this work was to provide a set of tools that would help machine learning developers and practitioners create faster,
-more scalable machine learning models.
-Problems requiring MIPS naturally arise in many machine learning models, for example in
-classification problems with large output spaces, when a linear models or deep neural networks are used.
+\remark{To this end we provide a set of tools that would help machine learning developers and practitioners create faster,
+more scalable machine learning models.}
+Problems requiring MIPS naturally arise in many machine learning models, for example, in
+classification problems with large output spaces, when linear models or deep neural networks are used.
 
-Generally speaking, MIPS is the task involving searching a massive collection of items for
-an item most similar to particular one, called query. The items may have many properties (features)
+Generally speaking, MIPS is the task involving searching through a massive collection of items for
+an item most similar to a particular one, called query. The items may have many properties (features)
 according to which items can be more related or differ from each other.
 Every item is mathematically represented by a vector, with all vector's components being item's features.
 
@@ -25,31 +24,30 @@ can last much longer if needed.
 It is not always necessary for the exact result to be returned --- it can often be approximate.
 In this thesis we focus on such algorithms --- they trade some prediction precision for speed.
 
-The library we built aims to deliver indexes, based on algorithms proposed in three articles,
-designed to efficiently retrieve a set of approximate results.
+\remark{The library implemented in this thesis delivers three different MIPS algorithms,  recently introduced in the literature. Następnie w jednym lub dwóch zdaniach opisujecie każdy z tych trzech algorytmów}.
 
-Additionally, we wanted the algorithms to not only offer high performance, but also to be easy-to-use. We therefore
-focused on providing a set of wrappers around a range of machine learning libraries, that allow users to
-speed up their models without ever touching any of the algorithms indexes rely on. Consequently,
+\remark{Moreover, the library not only offers high performance, but is also easy-to-use. It provides a set of wrappers around a range of machine learning libraries, that allow users to
+speed up their models without ever touching any of the implemented MIPS algorithms.} Consequently,
 these wrappers can be used as drop-in replacements for a number of models in Python machine learning ecosystem.
 We show some examples of how this library can be used in practice,
 as well as detailed experiments measuring the speed and accuracy of our algorithms.
 
 The rest of this thesis is structured as follows.
-Second chapter is dedicated to theoretical description of algorithms aiming to solve MIPS.
-Third chapter describes implementation details of written software.
-Fourth chapter presents experimental results.
-Fifth chapter concludes the thesis.
-There is also an appendix at the end describing how to run our library.
+\remark{The next chapter is dedicated to the theoretical description of the MIPS algorithms.
+The third chapter describes implementation details of the library.
+Chapter 4 presents experimental results.
+The last chapter concludes the thesis.
+In the appendix we describe how to run the library.}
 
-Marcin Elantkowski wrote wrappers translating C++ indexes to Python, prepared data using his fork of FastText
+\remark{The list below shows in detail the contribution of each author of this thesis:
+\begin{itemize}
+\item \textbf{Marcin Elantkowski} wrote wrappers translating C++ indexes to Python, prepared data using his fork of FastText
 library, adapted the code so it could be used from Pytorch and ran final tests on Amazon Web Services.
-
-Adam Krasuski refactored and optimized core algorithms C++ code, implemented Faiss interface,
-then after final tests, analyzed the benchmarking results.
-
-Agnieszka Lipska implemented first version of quantization algorithm, implemented Faiss interface and
-adapted the code to use it from Scikit-learn.
-
-Franciszek Walkowiak implemented naive versions of ALSH and hierarchical \mbox{k-means} and conducted
+\item \textbf{Adam Krasuski} refactored and optimized the C++ code of the core algorithms, implemented an interface to the Faiss library, analyzed and described the empirical results.
+\item \textbf{Agnieszka Lipska} implemented the first version of the quantization algorithm, implemented the Faiss interface, and adapted the code to use it from Scikit-learn.
+\item \textbf{Franciszek Walkowiak} implemented the first versions of ALSH and hierarchical \mbox{k-means} and conducted
 preliminary tests on a personal computer.
+\end{itemize}
+}
+
+\remark{Wiele nazw, które używacie nie będzie znanych czytelnikowi. Dlatego we wcześniejszych akapitach musi się znaleźć krótkie omówienie algorytmów, biblioteki Faiss, FastText oraz Scikit-Learn. Wspominając o AWS warto wytłumaczyć co to takiego.}
