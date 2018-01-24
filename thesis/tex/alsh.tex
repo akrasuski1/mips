@@ -19,9 +19,22 @@ similarity is more precisely evaluated than one single hash function would evalu
 To allow even higher abstraction level, $L$ meta-hash functions can be used to create $L$ hash tables ---
 vectors will be placed in $L$ sets of buckets according to some rules depending on the applied meta-hash function.
 Before hashing, vectors can be augmented using one of the approaches presented in the beginning
-of this chapter, e.g., Shrivastrava's or Neyshabur's transformation. \remark{Zmieńcie nazwy tych podejść}
+of this chapter, e.g., SL or NS transformation. ALSH index construction is shown in Algorithm 7.
 
-Searching the index with query can as well be preceded by its earlier transformation.
+\begin{algorithm}
+	\caption{ALSH clustering}
+	\begin{algorithmic}
+		\For{$l = 0, 1, \dots, L$}
+			\For{$k = 0, 1, \dots, K$}
+				\State Key[$k$] $\gets$ Hash($k, l, x$)
+			\EndFor
+			\State HashTables[$l$][Key].Vectors $\gets x$
+		\EndFor
+		\State \Return HashTables
+	\end{algorithmic}
+\end{algorithm}
+
+Searching the index with query (Algorithm 8) can as well be preceded by its earlier transformation.
 Detecting which database vectors are most similar to query relies on checking with which
 vectors the query collided after being hashed using exactly the same meta-hash functions.
 Speaking the bucket metaphor: the bucket which contains the query, is also likely to contain
@@ -31,7 +44,21 @@ most similar vectors should be chosen. In order to do that, exhaustive search on
 can be performed.
 Another idea is to create a ranking sorted by the number of tables in which a collision
 between query and vector occurred.
-\par
+
+\begin{algorithm}
+	\caption{ALSH querying}
+	\begin{algorithmic}
+		\State Result $\gets \emptyset$
+		\For{$l = 0, 1, \dots, L$}
+			\For{$k = 0, 1, \dots, K$}
+				\State Key[$k$] $\gets$ Hash($k, l, q$)
+			\EndFor
+			\State Result $\gets$ Result $\cup$ HashTables[$l$][Key].Vectors
+		\EndFor
+		\State \Return Result
+	\end{algorithmic}
+\end{algorithm}
+
 Meta-hashes $H$ are concatenations of ordinary hashes $h$ --- so the $j^{th}$ vector will be placed in 
 the $i^{th}$ table in bucket:\footnote{
 In the actual implementation, the sequence of hashes is compressed to a single 64-bit integer. This
@@ -49,33 +76,6 @@ h_{i,j}(x) = \floor*{\frac{a_{i,j}^T x + b_{i,j}}{r}}, a_{i,j} \sim N(0,1), b_{i
 Random vectors $a_{i,j}$ and scalars $b_{i,j}$ are generated once and used throughout the whole
 algorithm, including the querying phase. Parameters specific to this algorithm are $L$, $K$ and $r$.
 
-\begin{algorithm}
-	\caption{ALSH clustering}
-	\begin{algorithmic}
-		\For{$l = 0, 1, \dots, L$}
-			\For{$k = 0, 1, \dots, K$}
-				\State Key[$k$] $\gets$ Hash($k, l, x$)
-			\EndFor
-			\State HashTables[$l$][Key].Vectors $\gets x$
-		\EndFor
-		\State \Return HashTables
-	\end{algorithmic}
-\end{algorithm}
-
-\begin{algorithm}
-	\caption{ALSH querying}
-	\begin{algorithmic}
-		\State Result $\gets \emptyset$
-		\For{$l = 0, 1, \dots, L$}
-			\For{$k = 0, 1, \dots, K$}
-				\State Key[$k$] $\gets$ Hash($k, l, q$)
-			\EndFor
-			\State Result $\gets$ Result $\cup$ HashTables[$l$][Key].Vectors
-		\EndFor
-		\State \Return Result
-	\end{algorithmic}
-\end{algorithm}
-
 Vector multiplication is regarded as an elementary operation.
 The hash function we use does not do much more than that (except one addition,
 one division and one rounding),
@@ -87,13 +87,13 @@ The querying phase complexity is hard to estimate, since it is data-dependent.
 The lower bound is $\Omega(K \cdot L)$, as this is the number of hashes to be
 calculated. Adding results to set can potentially take $O(n)$ time in the worst
 case, if every vector collides with the query. This is an unlikely scenario if
-the hashing function is chosen properly. The pseudocode as \remark{presented in Algorithm ...} returns a set
-of candidates --- if we want to get top-K of them, we need to calculate the exact
+the hashing function is chosen properly. The pseudocode as presented in Algorithm 8 returns a set
+of candidates --- if we want to get top-$k$ of them, we need to calculate the exact
 inner product of the query with each of them --- this again can take up to
 $O(n)$ time. Careful choosing of $K$ and $L$ may avoid the issue
 by making collisions only reasonably frequent.
 
-\remark{To finalize the description of ALSH let us consider the following example.}
+To finalize the description of ALSH let us consider the following example.
 We use $L = 2$ hash tables for a database of 4 vectors:
 $x_1, x_2, x_3$ and $x_4$. 
 First, vectors' keys in both tables are computed and based on them the hash tables are created:

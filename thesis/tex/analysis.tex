@@ -10,7 +10,7 @@ precision at a couple of points: 1, 5, 25 and 100. It turns out the precision vs
 plots are very similar for each of those values --- to save space, we only show
 graphs for precision at 100.
 
-\begin{figure}[H]
+\begin{figure}
 	\centering
 	\subfloat{
 		\includegraphics[width=.48\textwidth]{../graphs/nondominated/Amazon-3M-p100.eps}
@@ -45,7 +45,7 @@ To check whether this is caused by possibly faster implementation or the introdu
 hierarchy, we split $K$-Means curve into three lines, each corresponding to a single
 number of layers (for example, KMeans-2 means $K$-Means with two layers).
 
-\begin{figure}[H]
+\begin{figure}
 	\centering
 	\subfloat{
 		\includegraphics[width=.48\textwidth]{../graphs/nondominated-km/Amazon-3M-p100.eps}
@@ -57,7 +57,7 @@ number of layers (for example, KMeans-2 means $K$-Means with two layers).
 	\subfloat{
 		\includegraphics[width=.48\textwidth]{../graphs/nondominated-km/WikiLSHTC-p100.eps}
 	}
-	\caption{Pareto frontiers for K-Means (split) and IVF.}
+	\caption{Pareto frontiers for $K$-Means (split) and IVF.}
 \end{figure}
 
 From these graphs, we can see that in general IVF is approximately $30\% - 50\%$ faster
@@ -96,7 +96,7 @@ described in chapter 2.1 --- generally, higher values correspond to wider
 trees).
 
 
-\begin{figure}[H]
+\begin{figure}
 	\centering
 	\subfloat{
 		\includegraphics[width=.48\textwidth]{../graphs/kmeans-specific/time-prec-WikiLSHTC-1.eps}
@@ -123,7 +123,7 @@ quick (as very small number of subtrees are considered), but rough. We can
 check if this assumption holds by graphing $n_{query}$ vs. time and comparing
 it with previous graphs.
 
-\begin{figure}[H]
+\begin{figure}
 	\centering
 	\subfloat{
 		\includegraphics[width=.48\textwidth]{../graphs/kmeans-specific/test-time-WikiLSHTC-1.eps}
@@ -154,6 +154,3 @@ more values would narrow their non-domination range, strengthening the
 stated assumption. We did not do this due to graph readability issues
 (lines being hard to tell apart).
 }.
-
-
-\newpage

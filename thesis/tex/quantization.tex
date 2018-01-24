@@ -1,5 +1,5 @@
 The quantization-based inner product search algorithm \cite{quantization}
-instead of looking at whole vectors and queries like the other two algorithms described in this thesis \remark{na razie opisany był jeden algorytm; warto rozważyć zmianę kolejności podrozdziałów},
+instead of looking at whole vectors and queries like the previous described algorithm
 looks for similarities between parts of vectors.
 One can view it as trying to match queries to vectors independently for every part and
 by using this knowledge, estimating how well queries will match whole vectors.
@@ -11,63 +11,83 @@ Intuitively, this is done to spread the variance of vectors evenly into each sli
 explanation why this is needed is in the original paper.
 }
 
-Each vector should be then mapped into $K$ subspaces, i.e. divided into $K$ parts with a equal number of components.
+Each vector should be then mapped into $M$ subspaces, i.e. divided into $M$ parts with a equal number of components.
 Let us denote the set of the $i^{th}$ parts of all vectors in database by $P_i$.
 \begin{center}
 \renewcommand{\arraystretch}{1.2}
 \begin{tabular}{c|c|c|c|c|}
 \multicolumn{1}{r}{} & \multicolumn{1}{c}{$P_{1}$} & \multicolumn{1}{c}{$P_{2}$}
-& \multicolumn{1}{c}{$\cdots$} & \multicolumn{1}{c}{$P_{K}$} \\
+& \multicolumn{1}{c}{$\cdots$} & \multicolumn{1}{c}{$P_{M}$} \\
 \hhline{~----}
-$x_1$ = & $p_{1,1}$ & $p_{1,2}$ & $\cdots$ & $p_{1,K}$ \\
+$x_1$ = & $p_{1,1}$ & $p_{1,2}$ & $\cdots$ & $p_{1,M}$ \\
 \hhline{~----}
-$x_2$ = & $p_{2,1}$ & $p_{2,2}$ & $\cdots$ & $p_{2,K}$ \\
+$x_2$ = & $p_{2,1}$ & $p_{2,2}$ & $\cdots$ & $p_{2,M}$ \\
 \hhline{~----}
 $\vdots$ & $\vdots$ & $\vdots$ & $\ddots$ & $\vdots$ \\
 \hhline{~----}
-$x_n$ = & $p_{n,1}$ & $p_{n,2}$ & $\cdots$ & $p_{n,K}$ \\
+$x_N$ = & $p_{N,1}$ & $p_{N,2}$ & $\cdots$ & $p_{N,M}$ \\
 \hhline{~----}
 \end{tabular}
 \end{center}
 
 \begin{equation*}
-P_i = \{ p_{1,i}, p_{2,i}, \ldots, p_{n,i} \}
+P_i = \{ p_{1,i}, p_{2,i}, \ldots, p_{N,i} \}
 \end{equation*}
 
-The essential step in the algorithm is to perform $k$-means \remark{małe czy duże $k$?} procedure on every set $P_i$.
-This gives $k$ centroids $C_{i,j}$ and assignments $A_{i,l}$ of parts in $P_i$ to these centroids.
+The essential step in the algorithm is to perform $K$-means procedure on every set $P_i$.
+This gives $m$ centroids $C_{i,j}$ and assignments $A_{i,l}$ of parts in $P_i$ to these centroids.
 Every set has got its own independent centroids, which can be different from the other sets' centroids.
 
 \begin{center}
 \renewcommand{\arraystretch}{1.2}
 \begin{tabular}{c|c|c|c|c|}
 \multicolumn{1}{r}{} & \multicolumn{1}{c}{$A_{1}$} & \multicolumn{1}{c}{$A_{2}$}
-& \multicolumn{1}{c}{$\cdots$} & \multicolumn{1}{c}{$A_{K}$} \\
+& \multicolumn{1}{c}{$\cdots$} & \multicolumn{1}{c}{$A_{M}$} \\
 \hhline{~----}
-$x_1$ & $A_{1,1}$ & $A_{2,1}$ & $\cdots$ & $A_{K,1}$ \\
+$x_1$ & $A_{1,1}$ & $A_{2,1}$ & $\cdots$ & $A_{M,1}$ \\
 \hhline{~----}
-$x_2$ & $A_{1,2}$ & $A_{2,2}$ & $\cdots$ & $A_{K,2}$ \\
+$x_2$ & $A_{1,2}$ & $A_{2,2}$ & $\cdots$ & $A_{M,2}$ \\
 \hhline{~----}
 $\vdots$ & $\vdots$ & $\vdots$ & $\ddots$ & $\vdots$ \\
 \hhline{~----}
-$x_n$ & $A_{1,n}$ & $A_{2,n}$ & $\cdots$ & $A_{K,n}$ \\
+$x_N$ & $A_{1,N}$ & $A_{2,N}$ & $\cdots$ & $A_{M,N}$ \\
 \hhline{~----}
 \end{tabular}
 \end{center}
 
 \begin{equation*}
-\forall_i \forall_l\ \  A_{i,l} \in \{1,2,...,k\}
+\forall_i \forall_l\ \  A_{i,l} \in \{1,2,...,m\}
 \end{equation*}
 
-$k$-means clustering mentioned above means that vectors are quantized at the level of parts
+$K$-means clustering mentioned above means that vectors are quantized at the level of parts
 and the whole vector is represented by approximations of its parts.
+This clustering procedure is expressed by pseudocode in Algorithm 5.
+
+\begin{algorithm}
+	\caption{Quantization-based clustering}
+	\begin{algorithmic}
+		\For{$i = 0, 1, \dots, M$}
+			\State $P_i = \emptyset$
+		\EndFor
+		\For{$l = 0, 1, \dots, N$}
+			\State $x_l' \gets$ Permute($x_l$)
+			\State $part[0], part[1], \dots, part[M] \gets$ MakeParts($x_l'$)
+			\For{$i = 0, 1, \dots, M$}
+				\State $P_i = P_i \cup part[i]$
+			\EndFor
+		\EndFor
+		\For{$i = 0, 1, \dots, M$}
+			\State $C_i = \{C_{i,1}, C_{i,2}, \dots, C_{i,m}\}, A_i = \{A_{i,1}, A_{i,2}, \dots, A_{i,N}\} \gets$ Kmeans($P_i, M$)
+		\EndFor
+	\end{algorithmic}
+\end{algorithm}
 
 The score of a vector (how related it is to query) is computed as a sum of inner products
 between query's parts and centroids assigned to corresponding parts of the vector.
 Naive approach would calculate these inner products seperately for each vector,
 but since there are less centroids than vectors, it is enough to compute the products once
 and use them when needed.
-For this, an auxilliary table $T$ having $K$ columns and $k$ rows has to be created.
+For this, an auxilliary table $T$ having $M$ columns and $m$ rows has to be created.
 Table entry $T_{i,j}$ is a dot product between the $i^{th}$ part of query $q$ ($q_i$) and the $j^{th}$
 centroid assigned to set $P_i$ ($C_{i,j}$).
 
@@ -75,55 +95,37 @@ centroid assigned to set $P_i$ ($C_{i,j}$).
 \begin{center}
 \begin{tabular}{|c|c|c|c|}
 \hhline{----}
-$ q_1^T C_{1,1} $ & $ q_2^T C_{2,1} $ & $ \cdots $ & $ q_K^T C_{K,1} $\\
+$ q_1^T C_{1,1} $ & $ q_2^T C_{2,1} $ & $ \cdots $ & $ q_M^T C_{M,1} $\\
 \hhline{----}
-$ q_1^T C_{1,2} $ & $ q_2^T C_{2,2} $ & $ \cdots $ & $ q_K^T C_{K,2} $\\
+$ q_1^T C_{1,2} $ & $ q_2^T C_{2,2} $ & $ \cdots $ & $ q_M^T C_{M,2} $\\
 \hhline{----}
 $ \vdots $ & $ \vdots $ & $ \ddots $ & $ \vdots $\\
 \hhline{----}
-$ q_1^T C_{1,k} $ & $ q_2^T C_{2,k} $ & $ \cdots $ & $ q_K^T C_{K,k} $\\
+$ q_1^T C_{1,m} $ & $ q_2^T C_{2,m} $ & $ \cdots $ & $ q_M^T C_{M,m} $\\
 \hhline{----}
 \end{tabular}
 \end{center}
 
 The inner product approximation for vector $x_l$ is then:
-$$q \cdot x_l \approx \sum_{i=1}^{K} T_{i,A_{i,l}} = \sum_{i=1}^{K} q_i^T C_{i,A_{i,l}} \,.$$
+$$q \cdot x_l \approx \sum_{i=1}^{M} T_{i,A_{i,l}} = \sum_{i=1}^{M} q_i^T C_{i,A_{i,l}} $$
 In the end, certain number of vectors with highest approximations is reported.
-For each vector $x_l$, $l = 1,2,...,n$, squared error arising from clustering can be expressed in the following way:
-$$ \sum_{i=1}^{K}  [q_{i}^{T} (C_{i, A_{i,l}} - p_{l,i})]^2$$
-
-\begin{algorithm}
-	\caption{Quantization-based clustering}
-	\begin{algorithmic}
-		\For{$i = 0, 1, \dots, K$}
-			\State $P_i = \emptyset$
-		\EndFor
-		\For{$l = 0, 1, \dots, n$}
-			\State $x_l' \gets$ Permute($x_l$)
-			\State $part[0], part[1], \dots, part[K] \gets$ MakeParts($x_l'$)
-			\For{$i = 0, 1, \dots, K$}
-				\State $P_i = P_i \cup part[i]$
-			\EndFor
-		\EndFor
-		\For{$i = 0, 1, \dots, K$}
-			\State $C_i = \{C_{i,1}, C_{i,2}, \dots, C_{i,k}\}, A_i = \{A_{i,1}, A_{i,2}, \dots, A_{i,n}\} \gets$ Kmeans($P_i, K$)
-		\EndFor
-	\end{algorithmic}
-\end{algorithm}
+The querying phase is presented in Algorithm 6.
+For each vector $x_l$, $l = 1,2,...,N$, squared error arising from clustering can be expressed in the following way:
+$$ \sum_{i=1}^{M}  [q_{i}^{T} (C_{i, A_{i,l}} - p_{l,i})]^2$$
 
 \begin{algorithm}
 	\caption{Quantization-based querying}
 	\begin{algorithmic}
 		\State $q' \gets$ Permute($q$)
-		\State $q_0, q_1, \dots, q_K \gets$ MakeParts($q'$)
-		\For{$i = 0, 1, \dots, K$}
-			\For{$j = 0, 1, \dots, k$}
+		\State $q_0, q_1, \dots, q_M \gets$ MakeParts($q'$)
+		\For{$i = 0, 1, \dots, M$}
+			\For{$j = 0, 1, \dots, m$}
 				\State $T_{i,j} = q_i^T C_{i,j}$
 			\EndFor
 		\EndFor
-		\For{$l = 0, 1, \dots, n$}
+		\For{$l = 0, 1, \dots, N$}
 			\State Result[$l$] $\gets 0$
-			\For{$i = 0, 1, \dots, K$}
+			\For{$i = 0, 1, \dots, M$}
 				\State Result[$l$] $\gets$ Result[$l$]$+ T_{i,A_{i,l}}$
 			\EndFor
 		\EndFor
@@ -132,17 +134,17 @@ $$ \sum_{i=1}^{K}  [q_{i}^{T} (C_{i, A_{i,l}} - p_{l,i})]^2$$
 \end{algorithm}
 
 The runtime of this query algorithm is a sum of time taken for building the $T$ table and calculating the inner product of each vector with the query using $T$ as a lookup table.
-The former does $O(K \cdot k)$ inner products, but each of those is only $O(\frac{d}{K})$
+The former does $O(M \cdot m)$ inner products, but each of those is only $O(\frac{d}{M})$
 elements long (where $d$ is the number of dimensions of original vectors). 
-Multiplying these, we get $O(k \cdot d)$ floating-point multiplications.
-The second loop takes $O(n \cdot K)$ floating-point {additions}. Additions are often
+Multiplying these, we get $O(m \cdot d)$ floating-point multiplications.
+The second loop takes $O(N \cdot M)$ floating-point {additions}. Additions are often
 cheaper than multiplications, but that does not change the asymptotics.
 
-The total runtime is thus $O(k \cdot d + n \cdot K)$, but the number of centroids $k$ is usually 
-relatively small --- if smaller than $\frac{n \cdot K}{d}$, the second term dominates 
+The total runtime is thus $O(m \cdot d + N \cdot M)$, but the number of centroids $m$ is usually 
+relatively small --- if smaller than $\frac{N \cdot M}{d}$, the second term dominates 
 and the expression can be simplified to
-$O(K \cdot n)$. This is still linear in $n$ like full search, but has a smaller multiplicative
-term, leading to theoretical $O(\frac{d}{K})$ speedup (with possible extra speedup from changing
-multiplication to addition). \remark{Oznaczenia!!! Wcześniej liczba przykładów była oznaczona przez $N$}
+$O(M \cdot N)$. This is still linear in $N$ like full search, but has a smaller multiplicative
+term, leading to theoretical $O(\frac{d}{M})$ speedup (with possible extra speedup from changing
+multiplication to addition).
 
 \remark{Warto dodać ten sam przykład co we wcześniejszym podrozdziale}

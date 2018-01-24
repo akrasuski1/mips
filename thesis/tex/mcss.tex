@@ -26,6 +26,7 @@ There exist, however, a couple of known ways
 of transforming data and query vectors in order to transform the MIPS problem to MCSS or NNS in the transformed space. We compare two such 
 transformations, one introduced by Shrivastava and Li \cite{alsh}, and the second by
 Neyshabur and Srebro \cite{neyshabur}.
+We will call them SL and NS transformations respectively.
 
 The first transformation has two parameters: $m$ and $U$, such that $0 < U < 1$. All queries
 are first normalized, and all vectors divided by the same number such that
@@ -52,7 +53,7 @@ MIPS problem, as long as $m$ is sufficiently large:
 
 In the above $1 + \frac{m}{4} $ is a constant, so it does not change the NNS solution. Similarly  the last term, 
 $||x||^{2^{m+1}}$, quickly vanishes as $m \to \infty$, so it can be skipped
-as an approximation. Shrivastava suggests using $m \ge 3$ for good results.
+as an approximation. Shrivastava and Li suggest using $m \ge 3$ for good results.
 This leaves just the $ - 2 q \cdot x $ term, which is, up to a multiplicative
 constant, the metric optimized in MIPS.
 Thus:
@@ -60,7 +61,7 @@ $$
 \argmax_{i}\ x_i \cdot q \simeq \argmin_{i}\ ||x' - q'||
 $$
 
-Neyshabur simplifies the augmentation significantly. Here, queries are also
+Neyshabur and Srebro simplify the augmentation significantly. Here, queries are also
 normalized, and vectors scaled such that they are within unit sphere. The
 transformation is then:
 \begin{eqnarray*}
@@ -80,5 +81,5 @@ space.
 
 Hierarchical $K$-means and ALSH approximations for MIPS problem may use one
 of these two augmentations to improve the results. In our implementation,
-algorithms are parametrized by the type of the transformation used: Shrivastava,
-Neyshabur, or no transformation as a baseline. \remark{Zmieńcie nazwy tych transformacji, ponieważ w przypadku obydwóch publikacji jest więcej niż jeden autor}
+algorithms are parametrized by the type of the transformation used: SL, NS,
+or no transformation as a baseline.
