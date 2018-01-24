@@ -6,7 +6,7 @@ the nondominated parameter choices --- that is those, for which there is no othe
 parameter choice that gives results that are better in both query time and precision.
 
 Algorithms were always called with request for top 100 vectors, but we recorded
-precision at a couple of points: 1, 5, 25 and 100. It turns out the precision vs time
+precision at a couple of points: 1, 5, 25 and 100. It turns out the precision vs. time
 plots are very similar for each of those values --- to save space, we only show
 graphs for precision at 100.
 
@@ -35,7 +35,7 @@ Still, the precision did not exceed approximately $0.60$ for reasonable speedups
 this dataset. Finally, the quantization-based algorithm, although it was able to give
 reasonable precision, it was so slow, that the only dataset it did not time 
 out\footnote{Timeout was set to twice the time of brute force search.}
-was siftsmall dataset. It contained only ten thousand vectors though and was included
+was SIFTsmall dataset. It contained only ten thousand vectors though and was included
 just for completion.
 
 IVF and $K$-Means curves follow each other quite closely --- it could be expected though,

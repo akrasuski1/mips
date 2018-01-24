@@ -42,24 +42,24 @@ Moreover, data is only read from indexes, so there is no race condition hazard.
 \subsection{Wrapping C++ with Python}
 
 We have used \texttt{pybind11}\cite{pybind11} library to create wrappers around our C++ code. We chose \texttt{pybind11}
-due to several reasons: it supports a wide range of \texttt{C++} constructs
-(including classes, lambdas, and smart pointers), can generate wrappers for multiple python versions and
-implementations (including Python 2.7, 3.x, and PyPy (PyPy2.7 >= 5.7)), and works nicely with \texttt{numpy} arrays.
-Additionally, one needs to provide only a single \texttt{C++} source file to create these wrappers, which is
+due to several reasons: it supports a wide range of C++ constructs
+(including classes, lambdas, and smart pointers), can generate wrappers for multiple Python versions and
+implementations (including Python 2.7, 3.x, and PyPy (PyPy2.7 >= 5.7)), and works nicely with NumPy arrays.
+Additionally, one needs to provide only a single C++ source file to create these wrappers, which is
 a big advantage compared to e.g. \texttt{SWIG}.
 
-\texttt{numpy} is an extremely popular Python library for scientific computing, and is the backbone of all
+NumPy is an extremely popular Python library for scientific computing, and is the backbone of all
 machine learning libraries in use today. NumPy’s main object is the homogeneous multidimensional array, which
 can be used to hold for example weights of a trained classifier. If we wanted to use our C++ indexes on such
 objects, it was crucial to be able to pass them without copying the underlying storage.
 
-Luckily it is quite straightforward in \texttt{pybind11} to write wrappers that can accept a \texttt{numpy} array
-and extract a raw \texttt{C} pointer to its data. Conversely, it is also straightforward to create
-a \texttt{numpy} array from a raw pointer returned by a \texttt{C} function. This array is then able to take the
+Luckily it is quite straightforward in \texttt{pybind11} to write wrappers that can accept a NumPy array
+and extract a raw C pointer to its data. Conversely, it is also straightforward to create
+a NumPy array from a raw pointer returned by a C function. This array is then able to take the
 ownership of this pointer and realease it upon being garbage collected.
 
-In all of our function we release the \texttt{GIL} -- Python's Global Interpreter Lock. This means that while our
-\texttt{C++} is executing, Python interpreter is free to run other tasks. Once our \texttt{C++} code returns, the
+In all of our function we release the \texttt{GIL} --- Python's Global Interpreter Lock. This means that while our
+C++ is executing, Python interpreter is free to run other tasks. Once our C++ code returns, the
 interpreter lock is re-aquired.
 
 \subsection{Internal API}

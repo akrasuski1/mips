@@ -1,9 +1,9 @@
 \section{Experimental Design}\label{sec:experimentalDesign}
 
-    We've conducted extensive experiments to evaluate performance of our algorithms. We've used
+    We have conducted extensive experiments to evaluate performance of our algorithms. We have used
     four different datasets, described in detail in section~\ref{subsec:datasets}, and compared
-    our implementation with a highly-optimized, open source \texttt{FAISS} library~\cite{faiss} released by
-    \texttt{Facebook AI Research} group.
+    our implementation with a highly-optimized, open source Faiss library~\cite{faiss} released by
+    Facebook AI Research group.
 
     \subsection{Evaluation metrics}\label{subsec:evaluationMetrics}
 
@@ -14,16 +14,16 @@
         top-$100$ (approximate) nearest neighbours for each vector in a set of queries provided by the user.
         We assume that queries are available as a contiguous chunk of data kept in-memory.
 
-        \texttt{Precision-@}$k$ can be intuitively described as a
-        \textit{"number of relevant items in the list of $k$ returned items, divided by $k$".}
+        \texttt{Precision@}$k$ (P@$k$) can be intuitively described as a
+        ``number of relevant items in the list of $k$ returned items, divided by $k$''.
 
         More formally, given a vector of scores assigned to each item $\hat{\mathbf y} \in {\mathcal{R}}^{L}$, and a
         binary vector indicating which items are relevant $\mathbf y \in \left\lbrace 0, 1 \right\rbrace^L$
         we can write
 
-        \begin{equation}
+        \begin{equation*}
             \text{P}@k := \frac{1}{k} \sum_{l\in \text{rank}_k (\hat{\mathbf y})} \mathbf y_l
-        \end{equation}
+        \end{equation*}
 
         where $\text{rank}_k(\mathbf y)$ returns the $k$ largest indices of $y$ ranked in descending order.
 
@@ -38,26 +38,26 @@
 
         We have used four datasets to evaluate performance of our algorithms.
 
-        Two of them, \texttt{SIFT} and \texttt{SIFTsmall} were introduced in~\cite{jegou2011product} and their
+        Two of them, SIFT and SIFTsmall were introduced in~\cite{jegou2011product} and their
         main purpose was to allow for evaluation of (approximate) \texttt{knn} algorithms. They are freely
-        available for download at~\cite{sift}
+        available for download at~\cite{sift}.
 
-        For these datasets a set of $n$ "databse" vectors is given with dimensionality
-        $d=128$, as well as a set of "query" vectors $\in \mathcal{R}^d$
-        and the "groundtruth" indices. For every "query" vector there are $100$ "groundtruth" indices
+        For these datasets a set of $n$ ``database'' vectors is given with dimensionality
+        $d=128$, as well as a set of ``query'' vectors $\in \mathcal{R}^d$
+        and the ``groundtruth'' indices. For every ``query'' vector there are $100$ ``groundtruth'' indices
         that point to the closest (according to $L_2$ distance) vectors in the database.
 
         First of all, for every query, we consider only the first vector in the groundtruth as relevant.
         Secondly, we recompute the groundtruth indices so that they're sorted accroding to inner-product
         metric.
 
-        For the two remaining datasets, we have used \texttt{Wiki-LSHTC}~\cite{lshtc} and
-        \texttt{Amazon-3m}~\cite{a3m} datasets, publicly available at~\cite{exrepo}.
+        For the two remaining datasets, we have used Wiki-LSHTC~\cite{lshtc} and
+        Amazon-3M~\cite{a3m} datasets, publicly available at~\cite{exrepo}.
 
         Given the scope of our thesis, they are certainly the most interesting from the machine learning perspective,
         but at the same time pose several challanges.
 
-        The reason these datasets are more meaningfull than \texttt{SIFT} is because they allow us to test our
+        The reason these datasets are more meaningful than SIFT is because they allow us to test our
         algorithms in a real-world setting, where there is a linear model trained to perfrom a multilabel
         classification, for which inference procedure has to be sped up.
 
@@ -67,74 +67,74 @@
         We note that there are some constraints when it comes to the choice of the classifier. The first condition
         is that the model should be bottlenecked by a large number of inner products that have to be performed during
         inference step. The second is that these inner products should only deal with dense vectors, since both
-        out algorithms and reference \texttt{FAISS} library can only cope with such representations.
+        out algorithms and reference Faiss library can only cope with such representations.
 
         We have experimented with several models, including deep neural networks, but finally decided to
-        use \texttt{FastText}~\cite{fasttext} classifier. It's a very simple, yet powerfull architecture, that
-        can be efficiently trained on very large datasets. It's speed comes from the fact that it uses an efficient,
+        use \texttt{FastText}~\cite{fasttext} classifier. It is a very simple, yet powerfull architecture, that
+        can be efficiently trained on very large datasets. Its speed comes from the fact that it uses an efficient,
         asynchronous, 1-bit stochastic gradient descent, and doesn't compute full softmax over the output space,
         but approximates it with a negative sampling~\cite{w2v}.
 
         \texttt{FastText} takes an input example in a form of a sparse vector (in our case, each index in that vector
         represents a word in the input sentence), and computes its hidden, dense representation. Then, this
         representation is multiplied with a weight vector for each output class, giving us final predictions.
-        This last step is exactly the \texttt{MIPS} problem we are discussing in this work.
+        This last step is exactly the MIPS problem we are discussing in this work.
 
         Naturally, we wanted to use our approximate algorithms to avoid computing dot product between a hidden
         representation and a weight vector for each class. To be sure that our timings are as accurate as possible,
         we decided to not plug our methods directly into the model. Instead, we first computed the hidden representation
         for each example in the dataset, and saved those to disk. For each example we also saved a set of
-        true labels associated with this example. These were our "relevant" classes for each item.
-        Finally, we extracted the weight vectors associated with each class, and saved those as well. Givent this setup,
-        it was now straightforwad to perfom experiments -- we just treated the weight vectors as our database vectors,
+        true labels associated with this example. These were our ``relevant'' classes for each item.
+        Finally, we extracted the weight vectors associated with each class, and saved those as well. Given this setup,
+        it was now straightforward to perfom experiments --- we just treated the weight vectors as our database vectors,
         and hidden representations as query vectors.
 
-        For completeness, below we summarize the descriptive statistics of the used datasets in table~\ref{tab:dsz}
+        For completeness, we summarize the descriptive statistics of the used datasets in table~\ref{tab:dsz}.
 
         \begin{table}
           \caption{Data statistics. $d$ is the dimensionality of the feature vectors. For Wiki and Amazon this
-          is the dimensionality of fasttext hidden representation. $L$ is the number
-          of database vectors (for wiki and amazon this is the number of labels). $n$ is the number of query vectors}
+          is the dimensionality of \texttt{FastText} hidden representation. $L$ is the number
+          of database vectors (for Wiki-LSHTC and Amazon-3M this is the number of labels). $n$ is the number of query vectors.}
           \label{tab:dsz}
           \centering
           {
           \begin{tabular}{l|c|c|c|}
             Dataset & $d$ &$L$& $n$ \\
             \hline
-            siftsmall   & $128$ & $10000$   & $100$    \\
-            sift        & $128$ & $1000000$ & $10000$  \\
+            SIFTsmall   & $128$ & $10000$   & $100$    \\
+            SIFT        & $128$ & $1000000$ & $10000$  \\
             Wiki-LSHTC  & $256$ & $325056$  & $587084$ \\
-            Amazon-3m   & $256$ & $2812281$ & $742507$ \\
+            Amazon-3M   & $256$ & $2812281$ & $742507$ \\
           \end{tabular}
           }
         \end{table}
 
     \subsection{Baseline (IVF)}\label{subsec:baselineivf}
 
-        We have compared our implementations with a highly-optimized \texttt{FAISS}~\cite{faiss} library.
-        Specifically, we have decided to use the \texttt{Inverted-File-Index} algorithm it provides.
+        We have compared our implementations with a highly-optimized Faiss~\cite{faiss} library.
+        Specifically, we have decided to use the Inverted File Index algorithm it provides.
 
-        This choice was motivated by two things.
+        This choice was motivated by two factors.
         Firstly, the authors of the library have empirically determined that this algorithm performs
-        really well in settings similar to ours -- where we are not memory constrained, and whole dataset
+        really well in settings similar to ours --- where we are not memory constrained, and whole dataset
         can fit in memory.
-        Secondly, this algorithm is a special case of our \texttt{Hierarchichal K-means}, specifically
-        it is equivalent to \texttt{hierarchical k-means} with number of levels set to $1$.
+        Secondly, this algorithm is a special case of our hierarchical $K$-means, specifically
+        it is equivalent to hierarchical $K$-means with number of layers set to $1$.
 
     \subsection{Parameter grid}\label{subsec:parameterGrid}
 
         After an initial round of manual tests we have gained a pretty good understanding of
         each algorithm, and were able to design a grid of sensible parameters for each of them.
 
-        For \texttt{Hierarchical K-means} the core parameters are of course the depth of the hierarchy
+        For hierarchical $K$-means the core parameters are of course the depth of the hierarchy
         (we have experimented with up to depth of $4$), number of centroids on each level,
         and the number of nodes that are expanded during search procedure.
 
-        For \texttt{Asymmetric LSH} the most important parameters were number of hash tables ($L$),
-        and number of hash functions $K$. The rest of the parameters was mostly kept fixed, following
+        For ALSH the most important parameters were number of hash tables $L$,
+        and number of hash functions ($K$). The rest of the parameters was mostly kept fixed, following
         recommendations of the original ALSH paper.
 
-        For \texttt{Quantization} we have varied the number of subspaces as well as number of centroids
+        For quantization-based algorithm we have varied the number of subspaces as well as number of centroids
         in each subspace.
 
         For a more detailed explanation of the parameters mentioned above, please see the sections
@@ -143,16 +143,16 @@
 
     \subsection{Amazon}
 
-        All of our experiments were conducted using \texttt{Amazon Web Services} infrastructure.
+        All of our experiments were conducted using Amazon Web Services infrastructure.
         More concretely we have used compute-optimized \texttt{c4.4xlarge} instances. Each such
-        instance provides $16$ virtual cores and $30$ gigabytes of \texttt{RAM}, and is powered
-        by an \texttt{Intel Xeon E5-2666 v3 (Haswell)} processor optimized specifically for AWS.
+        instance provides $16$ virtual cores and $30$ gigabytes of RAM, and is powered
+        by an Intel Xeon E5-2666 v3 (Haswell) processor optimized specifically for AWS.
 
         We have provisioned around $40$ machines, which allowed us to evaluate our parameter grid
         in just few days.
-        At the same time, however, it was unfesable to manage this number of machines manually.
+        At the same time, however, it was unfeasible to manage this number of machines manually.
         To overcome this problem, we have prepared a simple scheduler,
         that would take a grid of parameters and list of machines as inputs, and schedule
         jobs to be executed on those machines.
-        An \texttt{ssh} tunnel was then established with each machine so that scheduler
-        was able to request a job execution, and a machine was able report the evaluation results.
+        An SSH tunnel was then established with each machine so that scheduler
+        was able to request a job execution, and a machine was able to report the evaluation results.
