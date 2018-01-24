@@ -38,7 +38,6 @@ before the loop iterating through queries ensuring high scalability in situation
 where many queries have to be answered at once.
 Querying is easily parallelized because each query can be answered independently from others.
 Moreover, data is only read from indexes, so there is no race condition hazard.
-Additionally, in ALSH algorithm vector hashing is processed in parallel with respect to hash tables.
 
 \subsection{Wrapping C++ with Python}
 

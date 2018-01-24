@@ -35,7 +35,7 @@ P_i = \{ p_{1,i}, p_{2,i}, \ldots, p_{N,i} \}
 \end{equation*}
 
 The essential step in the algorithm is to perform $K$-means procedure on every set $P_i$.
-This gives $m$ centroids $C_{i,j}$ and assignments $A_{i,l}$ of parts in $P_i$ to these centroids.
+This gives $K$ centroids $C_{i,j}$ and assignments $A_{i,l}$ of parts in $P_i$ to these centroids.
 Every set has got its own independent centroids, which can be different from the other sets' centroids.
 
 \begin{center}
@@ -56,12 +56,12 @@ $x_N$ & $A_{1,N}$ & $A_{2,N}$ & $\cdots$ & $A_{M,N}$ \\
 \end{center}
 
 \begin{equation*}
-\forall_i \forall_l\ \  A_{i,l} \in \{1,2,...,m\}
+\forall_i \forall_l\ \  A_{i,l} \in \{1,2,...,K\}
 \end{equation*}
 
 $K$-means clustering mentioned above means that vectors are quantized at the level of parts
 and the whole vector is represented by approximations of its parts.
-This clustering procedure is expressed by pseudocode in Algorithm 5.
+This clustering procedure is expressed by pseudocode in Algorithm~\ref{alg:quant-cluster}.
 
 \begin{algorithm}
 	\caption{Quantization-based clustering}
@@ -77,9 +77,10 @@ This clustering procedure is expressed by pseudocode in Algorithm 5.
 			\EndFor
 		\EndFor
 		\For{$i = 0, 1, \dots, M$}
-			\State $C_i = \{C_{i,1}, C_{i,2}, \dots, C_{i,m}\}, A_i = \{A_{i,1}, A_{i,2}, \dots, A_{i,N}\} \gets$ Kmeans($P_i, M$)
+			\State $C_i = \{C_{i,1}, C_{i,2}, \dots, C_{i,K}\}, A_i = \{A_{i,1}, A_{i,2}, \dots, A_{i,N}\} \gets$ Kmeans($P_i, M$)
 		\EndFor
 	\end{algorithmic}
+\label{alg:quant-cluster}
 \end{algorithm}
 
 The score of a vector (how related it is to query) is computed as a sum of inner products
@@ -87,7 +88,7 @@ between query's parts and centroids assigned to corresponding parts of the vecto
 Naive approach would calculate these inner products seperately for each vector,
 but since there are less centroids than vectors, it is enough to compute the products once
 and use them when needed.
-For this, an auxilliary table $T$ having $M$ columns and $m$ rows has to be created.
+For this, an auxilliary table $T$ having $M$ columns and $K$ rows has to be created.
 Table entry $T_{i,j}$ is a dot product between the $i^{th}$ part of query $q$ ($q_i$) and the $j^{th}$
 centroid assigned to set $P_i$ ($C_{i,j}$).
 
@@ -101,7 +102,7 @@ $ q_1^T C_{1,2} $ & $ q_2^T C_{2,2} $ & $ \cdots $ & $ q_M^T C_{M,2} $\\
 \hhline{----}
 $ \vdots $ & $ \vdots $ & $ \ddots $ & $ \vdots $\\
 \hhline{----}
-$ q_1^T C_{1,m} $ & $ q_2^T C_{2,m} $ & $ \cdots $ & $ q_M^T C_{M,m} $\\
+$ q_1^T C_{1,K} $ & $ q_2^T C_{2,K} $ & $ \cdots $ & $ q_M^T C_{M,K} $\\
 \hhline{----}
 \end{tabular}
 \end{center}
@@ -109,7 +110,7 @@ $ q_1^T C_{1,m} $ & $ q_2^T C_{2,m} $ & $ \cdots $ & $ q_M^T C_{M,m} $\\
 The inner product approximation for vector $x_l$ is then:
 $$q \cdot x_l \approx \sum_{i=1}^{M} T_{i,A_{i,l}} = \sum_{i=1}^{M} q_i^T C_{i,A_{i,l}} $$
 In the end, certain number of vectors with highest approximations is reported.
-The querying phase is presented in Algorithm 6.
+The querying phase is presented in Algorithm~\ref{alg:quant-query}.
 For each vector $x_l$, $l = 1,2,...,N$, squared error arising from clustering can be expressed in the following way:
 $$ \sum_{i=1}^{M}  [q_{i}^{T} (C_{i, A_{i,l}} - p_{l,i})]^2$$
 
@@ -119,7 +120,7 @@ $$ \sum_{i=1}^{M}  [q_{i}^{T} (C_{i, A_{i,l}} - p_{l,i})]^2$$
 		\State $q' \gets$ Permute($q$)
 		\State $q_0, q_1, \dots, q_M \gets$ MakeParts($q'$)
 		\For{$i = 0, 1, \dots, M$}
-			\For{$j = 0, 1, \dots, m$}
+			\For{$j = 0, 1, \dots, K$}
 				\State $T_{i,j} = q_i^T C_{i,j}$
 			\EndFor
 		\EndFor
@@ -131,16 +132,17 @@ $$ \sum_{i=1}^{M}  [q_{i}^{T} (C_{i, A_{i,l}} - p_{l,i})]^2$$
 		\EndFor
 		\State \Return $\argmax_{l}$ Result[$l$]
 	\end{algorithmic}
+\label{alg:quant-query}
 \end{algorithm}
 
 The runtime of this query algorithm is a sum of time taken for building the $T$ table and calculating the inner product of each vector with the query using $T$ as a lookup table.
-The former does $O(M \cdot m)$ inner products, but each of those is only $O(\frac{d}{M})$
+The former does $O(M \cdot K)$ inner products, but each of those is only $O(\frac{d}{M})$
 elements long (where $d$ is the number of dimensions of original vectors). 
-Multiplying these, we get $O(m \cdot d)$ floating-point multiplications and additions.
+Multiplying these, we get $O(K \cdot d)$ floating-point multiplications and additions.
 The second loop takes $O(N \cdot M)$ floating-point {additions}. Additions are often
 cheaper than multiplications, but that does not change the asymptotics.
 
-The total runtime is thus $O(m \cdot d + N \cdot M)$, but the number of centroids $m$ is usually 
+The total runtime is thus $O(K \cdot d + N \cdot M)$, but the number of centroids $K$ is usually 
 relatively small --- if smaller than $\frac{N \cdot M}{d}$, the second term dominates 
 and the expression can be simplified to
 $O(M \cdot N)$. This is still linear in $N$ like full search, but has a smaller multiplicative

@@ -19,7 +19,7 @@ similarity is more precisely evaluated than one single hash function would evalu
 To allow even higher abstraction level, $L$ meta-hash functions can be used to create $L$ hash tables ---
 vectors will be placed in $L$ sets of buckets according to some rules depending on the applied meta-hash function.
 Before hashing, vectors can be augmented using one of the approaches presented in the beginning
-of this chapter, e.g., SL or NS transformation. ALSH index construction is shown in Algorithm 7.
+of this chapter, e.g., SL or NS transformation. ALSH index construction is shown in Algorithm~\ref{alg:alsh-cluster}.
 
 \begin{algorithm}
 	\caption{ALSH clustering}
@@ -32,9 +32,10 @@ of this chapter, e.g., SL or NS transformation. ALSH index construction is shown
 		\EndFor
 		\State \Return HashTables
 	\end{algorithmic}
+\label{alg:alsh-cluster}
 \end{algorithm}
 
-Searching the index with query (Algorithm 8) can as well be preceded by its earlier transformation.
+Searching the index with query (Algorithm~\ref{alg:alsh-query}) can as well be preceded by its earlier transformation.
 Detecting which database vectors are most similar to query relies on checking with which
 vectors the query collided after being hashed using exactly the same meta-hash functions.
 Speaking the bucket metaphor: the bucket which contains the query, is also likely to contain
@@ -57,6 +58,7 @@ between query and vector occurred.
 		\EndFor
 		\State \Return Result
 	\end{algorithmic}
+\label{alg:alsh-query}
 \end{algorithm}
 
 Meta-hashes $H$ are concatenations of ordinary hashes $h$ --- so the $j^{th}$ vector will be placed in 
@@ -87,7 +89,7 @@ The querying phase complexity is hard to estimate, since it is data-dependent.
 The lower bound is $\Omega(K \cdot L)$, as this is the number of hashes to be
 calculated. Adding results to set can potentially take $O(n)$ time in the worst
 case, if every vector collides with the query. This is an unlikely scenario if
-the hashing function is chosen properly. The pseudocode as presented in Algorithm 8 returns a set
+the hashing function is chosen properly. The pseudocode as presented in Algorithm~\ref{alg:alsh-query} returns a set
 of candidates --- if we want to get top-$k$ of them, we need to calculate the exact
 inner product of the query with each of them --- this again can take up to
 $O(n)$ time. Careful choosing of $K$ and $L$ may avoid the issue
