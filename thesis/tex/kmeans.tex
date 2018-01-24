@@ -1,35 +1,43 @@
 
 A common approach for speeding up search of vector maximizing certain measure,
 such as inner product with a query vector, is preprocessing data vectors to
-quantize \remark{warto wyjaśnić, co oznacza czasownik "quantize" w tym przypadku} them to a smaller set of vectors. This technique assumes that a vector
-will have similar value of the target measure as its quantized representation.
-This is true for maximum inner product search, since two vectors,
-whose difference is $d$, cannot have bigger difference in inner product with
-query $q$ than $||d|| \cdot ||q||$. Similar argument can be made for NNS,
-where difference in distance to query will not exceed $d$.
-\remark{Powyższy akapit można byłoby ładnie opisać w formalny sposób}
+quantize them to a smaller set of vectors. Quantization in this case means
+finding a relatively small set $C$ of quantization vectors and a mapping
+from original data vectors to that set. Quantization vectors are usually
+centroids (arithmetic averages) of all data vectors mapping to it, and the
+mapping is chosen in a way making quantization error (difference between
+data vector and its centroid) as small as possible.
+
+This technique assumes that a vector
+will have similar value of the target measure --- in our case inner product --- 
+as its quantized representation.
+This is true for maximum inner product search --- if point $x$ is assigned
+to centroid $c$ and the distance between them (quantization error) is $d$,
+then error in estimating inner product of query vector $q$ with $x$ by inner
+product of query with centroid is smaller than $d$ (for normalized queries):
+
+$$ |q \cdot c - q \cdot x | = | q \cdot ( c - x ) | \le ||q|| \cdot d = d $$
 
 The speedup of this technique comes from the fact that set of quantized vectors
 can have smaller cardinality than the set of original vectors. This leads to a 
-useful heuristic while searching: \remark{the original data vector maximizing 
-inner product with query???} is quantized to a representation that is similarly
-good in terms of the target value. It is thus possible to first multiply 
+useful heuristic while searching: first multiply 
 query vector with all quantized vectors, select the one maximizing inner
 product, and then, for the final answer, consider only vectors having this vector
-as its quantization.
+as its quantization. This algorithm may in general give inexact answers
+because of quantization errors --- but it is a good approximation.
 
 A simple, but effective way to quantize vectors is $K$-means clustering.
-The problem is to produce a set of $K$ vectors, known as centroids, and assign
-each data vector to one of them in such a way, that minimizes sum of \remark{squared
-distances: taką metrykę używamy w K-meansach?} of each vector to its centroid. In practice, the clusters (vectors
+Formally, the clustering problem is to produce a set of $K$ vectors, known as centroids, and assign
+each data vector to one of them in such a way, that minimizes sum of squared
+distances of each vector to its centroid. Produced clusters (vectors
 assigned to the same centroid) have often relatively small radius (maximum
 distance between point in cluster to its centroid). That is a good property 
 for our problem, as it means that the inner product with the query will be well approximated
 by $q \cdot c$, where $c$ is the centroid vector.
 
-Finding $K$-means optimal solution is in general NP-hard, but there are efficient
-approximations for it. The most common and simple algorithm is known as 
-Lloyd's algorithm \remark{Nie używałbym tutaj nazwiska, ponieważ algorytm ten był niezależnie zaproponowany przez wiele osób, w tym również przez Hugo Steinhausa}. It consists of two steps performed alternately a number of
+Finding the optimal solution is in general NP-hard, but there are efficient
+approximations for it. The most common and simple algorithm consists of two steps performed 
+alternately a number of
 times. At each iteration, a set of centroids $C$ is maintained (randomly
 initialized at the start of the algorithm). The first
 step of an iteration is assignment of each data vector $x_i$ to the
@@ -41,9 +49,9 @@ In case of MCSS, a modified algorithm called spherical $K$-means can be used.
 It is essentially the same, with the only difference being the additional
 centroid normalization after each update. This is because MCSS
 takes into account only the vector direction, ignoring the magnitude. 
-}
+} The procedure is formally described in Algorithm~\ref{alg:k-means-cluster}.
 
-\begin{algorithm}[H]
+\begin{algorithm}
 	\caption{$K$-means algorithm}
 	\begin{algorithmic}
 		\State $C \gets K \text{ random vectors}$
@@ -58,6 +66,7 @@ takes into account only the vector direction, ignoring the magnitude.
 
 		\State \Return {$C,\ A$}
 	\end{algorithmic}
+\label{alg:k-means-cluster}
 \end{algorithm}
 
 In practice, we use a constant number of 25 outermost loop iterations
@@ -68,19 +77,20 @@ $O(N \cdot K)$ vector operations (where $N$ is number of data vectors and
 $K$ --- number of centroids), and each clustering step --- $O(K^2)$. Since
 $K \le N$, the time complexity is determined by the assignment step. For a real
 world scenario with $N = 10^6$ and $K = 4000$, there is approximately
-$10^6 \cdot 4000 = 10^{10}$ vector operations to be done per iteration --- since vectors
+$10^6 \cdot 4000 = 4 \cdot 10^{9}$ vector operations to be done per iteration --- since vectors
 can have a couple hundred of components, that figure increases to roughly
 $10^{12}$ floating point operations. This takes considerable amount of time,
 but it is a one-time calculation --- each query can then be answered without
 recalculating centroids.
 
-A query is answered by first calculating its inner product with each centroid,
-finding out which centroid $c$ maximizes it, and then multiplying the query with each vector
-whose quantization is in this centroid. The final solution is the vector 
+Algorithm~\ref{alg:k-means-query} describes how to answer query using stored centroids.
+First, query's inner product with each centroid is calculated, centroid $c$ maximizing it is
+found out, and then the query is multiplied by each vector whose quantization is this centroid.
+The final solution is the vector 
 with the biggest inner product. In essence, there are two exhaustive searches,
 the first one over the set of centroids, and the second over the set of vectors in the chosen cluster.
 
-\begin{algorithm}[H]
+\begin{algorithm}
 	\caption{$K$-means query}
 	\begin{algorithmic}
 		\State $B \gets -\infty$
@@ -99,9 +109,10 @@ the first one over the set of centroids, and the second over the set of vectors 
 		\EndFor
 		\State \Return $r$
 	\end{algorithmic}
+\label{alg:k-means-query}
 \end{algorithm}
 
-The time complexity of this algorithm is the sum of complexities of both loops.
+Time complexity of this algorithm is the sum of complexities of both loops.
 First, there are $O(K)$ vector multiplications to determine the best centroid,
 followed by $O(BF)$ inner products with its children\footnote{The second loop
 of the algorithm would have to perform $O(N)$ iterations if written naively.
@@ -122,8 +133,8 @@ a tradeoff between time and accuracy.
 There is also a second way of improving accuracy at the cost of time --- more
 than one centroid's children can be searched. This increases complexity of the
 second loop roughly $n$ times (where $n$ is number of selected centroids),
-but increases probability that the returned vector is the correct \remark{closest?} one. A further
-analysis of this scenario will be done in the following paragraphs, as part
+but increases probability that the returned vector is the closest one. A further
+analysis of this scenario will be done in following paragraphs, as part
 of the description of hierarchical $K$-means, generalization of this algorithm.
 
 %\bigskip
@@ -140,10 +151,9 @@ a second layer of centroids. Querying is similar to the non-hierarchical
 approach too --- query is first multiplied with all top-layer centroids,
 best of them is selected, then its best child and
 so on. This approach can be easily generalized to a higher number $L$  of layers.
+The pseudocode of clustering with hierarchical $K$ means is given as Algorithm~\ref{alg:h-k-means}.
 
-\remark{W tekście powinny znaleźć się odwołania do algorytmów, np. "The pseudocode of clustering with Hierarchical $K$ means is given as Algorithm~\ref{alg:h-k-means}.}
-
-\begin{algorithm}[H]
+\begin{algorithm}
 	\caption{Hierarchical $K$-means clustering}
 	\begin{algorithmic}
 		\State Layers$[0]$.vectors $\gets x $
@@ -181,14 +191,16 @@ so on. This approach can be easily generalized to a higher number $L$  of layers
 	\end{algorithmic}
 \end{algorithm}
 
-The running time of this algorithm varies with the number of layers. Assuming 
-the ratio of sizes of consecutive layers is $ \sqrt[L+1]{N} $ (\remark{as in algorithm???}),
+The running time of this algorithm varies with the number of layers. Size (number of
+centroids) of layers can be parametrized, but assuming
+the ratio of sizes of consecutive layers is $ \sqrt[L+1]{N} $, as a direct generalization
+of $ \sqrt{N} $ from non-hierarchic $K$-means,
 then each of the $ L + 1 $ searches will have to perform approximately
 $ O(\sqrt[L+1]{N}) $ inner products, for a total complexity of
 $ O(\sqrt[L+1]{N} \cdot (L + 1)) $. That means, for example, for the same real-world
 example as previously ($ N=10^6 $) with two layers only we need approximately
 $ \sqrt[2+1]{10^6} \cdot (2 + 1) = 300 $ inner products, as opposed
-to $ \sqrt{10^6} \cdot 2 = 2000 $ using a single layer like in flat $K$-means.
+to at least $ \sqrt{10^6} \cdot 2 = 2000 $ using a single layer like in flat $K$-means.
 Potential time gains are even bigger for 3 or 4 centroid layers.\footnote{
 There is a theoretical limit for improvement --- at point where increasing
 number of layers leads to slower search because of the multiplicative $L+1$ factor.
@@ -199,7 +211,7 @@ of $2.5$ children per centroid, i.e. almost binary tree.
 } There is a problem however --- there are few top-layer clusters,
 meaning they have many last-layer eventual descendants. That causes the
 original algorithm assumption of centroids being close to points they represent
-to become weaker. This leads to decrease in accuracy with the increasing number of layers.
+to become weaker, leading to gradual decrease in accuracy with the increasing number of layers.
 
 
 One way to counter it is to, again, consider $n$ best children instead of
@@ -226,9 +238,10 @@ $$
 $$
 1 = \frac{n \cdot K_{L-1}}{K_L^2}
 $$
-$$
+\begin{equation}
+\label{eqn:kl-n}
 \frac{K_L}{n} = \frac{K_{L-1}}{K_L}
-$$
+\end{equation}
 The remaining derivatives follow another equations:
 $$
 \frac{\partial P}{\partial K_i} =
@@ -238,14 +251,15 @@ $$
 $$
 \frac{n}{K_{i+1}} = \frac{n \cdot K_{i-1}}{K_i^2}
 $$
-$$
+\begin{equation}
+\label{eqn:ki-1}
 \frac{K_i}{K_{i+1}} = \frac{K_{i-1}}{K_i}
-$$
+\end{equation}
 
-We can now see that ratios of consecutive cluster sizes are constant --- in other
+From equation \ref{eqn:ki-1} we can see that ratios of consecutive cluster sizes are constant --- in other
 words, they form a geometric progression. The first term in the sequence,
-$K_0$ is known to be equal to number of data vectors, $N$. From the equation
-for derivative of $K_L$, last --- $(L+1)^{th}$ --- term is known to be $n$. From this,
+$K_0$ is known to be equal to number of data vectors, $N$. From equation \ref{eqn:kl-n},
+last --- $(L+1)^{th}$ --- term of the progression is known to be $n$. Combining the results,
 the common ratio is calculated to be $\sqrt[L+1]{n}$. The general formula
 for the number of centroids on the $i^{th}$ of $L$ layers minimizing the total number of
 inner products is hence:
