@@ -1,9 +1,10 @@
 \section{Aim and scope of the thesis}
 
-\remark{The aim of this thesis is to develop a library for fast, approximate \textit{maximum inner product search} (MIPS).}
+\remark{The aim of this thesis is to develop a library for fast,
+approximate \textit{maximum inner product search} (MIPS).}
 
-\remark{To this end we provide a set of tools that would help machine learning developers and practitioners create faster,
-more scalable machine learning models.}
+\remark{To this end we provide a set of tools that would help machine
+learning developers and practitioners create faster, more scalable machine learning models.}
 Problems requiring MIPS naturally arise in many machine learning models, for example, in
 classification problems with large output spaces, when linear models or deep neural networks are used.
 
@@ -24,13 +25,27 @@ can last much longer if needed.
 It is not always necessary for the exact result to be returned --- it can often be approximate.
 In this thesis we focus on such algorithms --- they trade some prediction precision for speed.
 
-\remark{The library implemented in this thesis delivers three different MIPS algorithms,  recently introduced in the literature. Następnie w jednym lub dwóch zdaniach opisujecie każdy z tych trzech algorytmów}.
+\remark{The library implemented in this thesis delivers three different MIPS algorithms,
+recently introduced in the literature. Następnie w jednym lub dwóch zdaniach opisujecie każdy z tych trzech algorytmów}.
 
-\remark{Moreover, the library not only offers high performance, but is also easy-to-use. It provides a set of wrappers around a range of machine learning libraries, that allow users to
+\remark{Moreover, the library not only offers high performance, but is also easy-to-use.
+It provides a set of wrappers around a range of machine learning libraries, that allow users to
 speed up their models without ever touching any of the implemented MIPS algorithms.} Consequently,
 these wrappers can be used as drop-in replacements for a number of models in Python machine learning ecosystem.
 We show some examples of how this library can be used in practice,
 as well as detailed experiments measuring the speed and accuracy of our algorithms.
+
+In particular we provide plugins for \texttt{Pytorch} (a deep learning library for Python), and \texttt{scikit-learn}
+(a general-purpose machine learning library, also for Python), as well as a modified version of \texttt{FastText}
+(a C++ library for efficient text classification).
+
+All experimental results presented in this thesis were obtained using Amazon Elastic Compute Cloud (EC2).
+EC2 is a part of Amazon.com's cloud-computing platform, Amazon Web Services (AWS). It allows users to rent virtual
+computers on which they can run their own computer applications.
+
+We have compared the implemented algorithms against the FAISS library \cite{faiss}, which is a library for efficient
+similarity search and clustering of dense vectors, developed by Facebook AI Research. We refer the reader to
+\cite{JDH17} for further details regarding this software.
 
 The rest of this thesis is structured as follows.
 \remark{The next chapter is dedicated to the theoretical description of the MIPS algorithms.
@@ -41,13 +56,15 @@ In the appendix we describe how to run the library.}
 
 \remark{The list below shows in detail the contribution of each author of this thesis:
 \begin{itemize}
-\item \textbf{Marcin Elantkowski} wrote wrappers translating C++ indexes to Python, prepared data using his fork of FastText
-library, adapted the code so it could be used from Pytorch and ran final tests on Amazon Web Services.
-\item \textbf{Adam Krasuski} refactored and optimized the C++ code of the core algorithms, implemented an interface to the Faiss library, analyzed and described the empirical results.
-\item \textbf{Agnieszka Lipska} implemented the first version of the quantization algorithm, implemented the Faiss interface, and adapted the code to use it from Scikit-learn.
-\item \textbf{Franciszek Walkowiak} implemented the first versions of ALSH and hierarchical \mbox{k-means} and conducted
-preliminary tests on a personal computer.
+    \item \textbf{Marcin Elantkowski} wrote wrappers exposing C++ indexes to Python, prepared datasets used in the
+        experiments, adapted the code so it could be used from PyTorch (a deep learning library for Python)
+        and FastText (a C++ library for text classification), and ran final tests on Amazon Web Services
+    \item \textbf{Adam Krasuski} refactored and optimized the C++ code of the core algorithms,
+        implemented an interface to the Faiss library, analyzed and described the empirical results.
+    \item \textbf{Agnieszka Lipska} implemented the first version of the quantization algorithm,
+        implemented the Faiss interface, and adapted the code to use it from Scikit-learn.
+    \item \textbf{Franciszek Walkowiak} implemented the first versions of ALSH and
+        hierarchical \mbox{k-means} and conducted preliminary tests on a personal computer.
 \end{itemize}
 }
 
-\remark{Wiele nazw, które używacie nie będzie znanych czytelnikowi. Dlatego we wcześniejszych akapitach musi się znaleźć krótkie omówienie algorytmów, biblioteki Faiss, FastText oraz Scikit-Learn. Wspominając o AWS warto wytłumaczyć co to takiego.}
