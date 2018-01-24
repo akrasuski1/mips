@@ -136,7 +136,7 @@ $$ \sum_{i=1}^{M}  [q_{i}^{T} (C_{i, A_{i,l}} - p_{l,i})]^2$$
 The runtime of this query algorithm is a sum of time taken for building the $T$ table and calculating the inner product of each vector with the query using $T$ as a lookup table.
 The former does $O(M \cdot m)$ inner products, but each of those is only $O(\frac{d}{M})$
 elements long (where $d$ is the number of dimensions of original vectors). 
-Multiplying these, we get $O(m \cdot d)$ floating-point multiplications.
+Multiplying these, we get $O(m \cdot d)$ floating-point multiplications and additions.
 The second loop takes $O(N \cdot M)$ floating-point {additions}. Additions are often
 cheaper than multiplications, but that does not change the asymptotics.
 
@@ -147,4 +147,11 @@ $O(M \cdot N)$. This is still linear in $N$ like full search, but has a smaller 
 term, leading to theoretical $O(\frac{d}{M})$ speedup (with possible extra speedup from changing
 multiplication to addition).
 
-\remark{Warto dodać ten sam przykład co we wcześniejszym podrozdziale}
+For example, for $N = 10^6$ vectors in 128-dimensional space ($d = 128$), brute-force search would
+perform $N \cdot d = 10^6 \cdot 128 = 1.28 \cdot 10^8$ floating-point multiplications and the same
+number of additions. If described algorithm is used, with dividing vectors into $M = 4$ subspaces,
+each clustered into $K = 4000$ clusters, we get:
+$$ K \cdot d = 4000 \cdot 128 = 512000 $$
+multiplications and additions for building the table, and
+$$ N \cdot M = 4 \cdot 10^6 $$ additions, for a total of about $4.5 \cdot 10^6$ additions and 
+$0.5 \cdot 10^6$ multiplications.
