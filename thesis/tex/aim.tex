@@ -1,10 +1,10 @@
 \section{Aim and scope of the thesis}
 
-\remark{The aim of this thesis is to develop a library for fast,
-approximate \textit{maximum inner product search} (MIPS).}
+The aim of this thesis is to develop a library for fast,
+approximate \textit{maximum inner product search} (MIPS).
 
-\remark{To this end we provide a set of tools that would help machine
-learning developers and practitioners create faster, more scalable machine learning models.}
+To this end we provide a set of tools that would help machine
+learning developers and practitioners create faster, more scalable machine learning models.
 Problems requiring MIPS naturally arise in many machine learning models, for example, in
 classification problems with large output spaces, when linear models or deep neural networks are used.
 
@@ -25,12 +25,17 @@ can last much longer if needed.
 It is not always necessary for the exact result to be returned --- it can often be approximate.
 In this thesis we focus on such algorithms --- they trade some prediction precision for speed.
 
-\remark{The library implemented in this thesis delivers three different MIPS algorithms,
-recently introduced in the literature. Następnie w jednym lub dwóch zdaniach opisujecie każdy z tych trzech algorytmów}.
+The library implemented in this thesis delivers three different MIPS algorithms,
+recently introduced in the literature.
+Two of these use $K$-means clusterization algorithm as part of their implementation: hierarchical $K$-means algorithm
+selects candidate set by querying tree of $K$-means clusters, and quantization-based approach uses $K$-means as well, 
+but only after subdividing data vectors into smaller-dimensionality subvectors. The third algorithm we consider
+is ALSH, or Asymmetric Locality Sensitive Hashing, which relies on specific hash functions preserving
+vector locality.
 
-\remark{Moreover, the library not only offers high performance, but is also easy-to-use.
+Our library not only offers high performance, but is also easy-to-use.
 It provides a set of wrappers around a range of machine learning libraries, that allow users to
-speed up their models without ever touching any of the implemented MIPS algorithms.} Consequently,
+speed up their models without ever touching any of the implemented MIPS algorithms. Consequently,
 these wrappers can be used as drop-in replacements for a number of models in Python machine learning ecosystem.
 We show some examples of how this library can be used in practice,
 as well as detailed experiments measuring the speed and accuracy of our algorithms.
@@ -48,13 +53,13 @@ similarity search and clustering of dense vectors, developed by Facebook AI Rese
 \cite{JDH17} for further details regarding this software.
 
 The rest of this thesis is structured as follows.
-\remark{The next chapter is dedicated to the theoretical description of the MIPS algorithms.
+The next chapter is dedicated to the theoretical description of the MIPS algorithms.
 The third chapter describes implementation details of the library.
 Chapter 4 presents experimental results.
 The last chapter concludes the thesis.
-In the appendix we describe how to run the library.}
+In the appendix we describe how to run the library.
 
-\remark{The list below shows in detail the contribution of each author of this thesis:
+The list below shows in detail the contribution of each author of this thesis:
 \begin{itemize}
     \item \textbf{Marcin Elantkowski} wrote wrappers exposing C++ indexes to Python, prepared datasets used in the
         experiments, adapted the code so it could be used from Pytorch and FastText,
@@ -66,5 +71,4 @@ In the appendix we describe how to run the library.}
     \item \textbf{Franciszek Walkowiak} implemented the first versions of ALSH and
         hierarchical \mbox{k-means} and conducted preliminary tests on a personal computer.
 \end{itemize}
-}
 
