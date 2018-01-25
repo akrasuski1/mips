@@ -40,15 +40,15 @@ these wrappers can be used as drop-in replacements for a number of models in Pyt
 We show some examples of how this library can be used in practice,
 as well as detailed experiments measuring the speed and accuracy of our algorithms.
 
-In particular we provide plugins for \texttt{Pytorch} (a deep learning library for Python), and \texttt{scikit-learn}
-(a general-purpose machine learning library, also for Python), as well as a modified version of \texttt{FastText}
+In particular we provide plugins for PyTorch (a deep learning library for Python), and scikit-learn
+(a general-purpose machine learning library, also for Python), as well as a modified version of fastText
 (a C++ library for efficient text classification).
 
 All experimental results presented in this thesis were obtained using Amazon Elastic Compute Cloud (EC2).
 EC2 is a part of Amazon.com's cloud-computing platform, Amazon Web Services (AWS). It allows users to rent virtual
 computers on which they can run their own computer applications.
 
-We have compared the implemented algorithms against the FAISS library \cite{faiss}, which is a library for efficient
+We have compared the implemented algorithms against the Faiss library \cite{faiss}, which is a library for efficient
 similarity search and clustering of dense vectors, developed by Facebook AI Research. We refer the reader to
 \cite{JDH17} for further details regarding this software.
 
@@ -62,13 +62,13 @@ In the appendix we describe how to run the library.
 The list below shows in detail the contribution of each author of this thesis:
 \begin{itemize}
     \item \textbf{Marcin Elantkowski} wrote wrappers exposing C++ indexes to Python, prepared datasets used in the
-        experiments, adapted the code so it could be used from Pytorch and FastText,
+        experiments, adapted the code so it could be used from PyTorch and fastText,
             and ran final tests on Amazon Web Services
     \item \textbf{Adam Krasuski} refactored and optimized the C++ code of the core algorithms,
         implemented an interface to the Faiss library, analyzed and described the empirical results.
     \item \textbf{Agnieszka Lipska} implemented the first version of the quantization algorithm,
-        implemented the Faiss interface, and adapted the code to use it from Scikit-learn.
+        implemented the Faiss interface, and adapted the code to use it from scikit-learn.
     \item \textbf{Franciszek Walkowiak} implemented the first versions of ALSH and
-        hierarchical \mbox{k-means} and conducted preliminary tests on a personal computer.
+        hierarchical \mbox{$K$-means} and conducted preliminary tests on a personal computer.
 \end{itemize}
 

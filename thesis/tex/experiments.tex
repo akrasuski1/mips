@@ -39,7 +39,7 @@
         We have used four datasets to evaluate performance of our algorithms.
 
         Two of them, SIFT and SIFTsmall were introduced in~\cite{jegou2011product} and their
-        main purpose was to allow for evaluation of (approximate) \texttt{knn} algorithms. They are freely
+        main purpose was to allow for evaluation of (approximate) $k$-nearest neighbors algorithms. They are freely
         available for download at~\cite{sift}.
 
         For these datasets a set of $n$ ``database'' vectors is given with dimensionality
@@ -53,14 +53,12 @@
 
         For the two remaining datasets, we have used Wiki-LSHTC~\cite{lshtc} and
         Amazon-3M~\cite{a3m} datasets, publicly available at~\cite{exrepo}.
-
         Given the scope of our thesis, they are certainly the most interesting from the machine learning perspective,
         but at the same time pose several challanges.
 
         The reason these datasets are more meaningful than SIFT is because they allow us to test our
         algorithms in a real-world setting, where there is a linear model trained to perfrom a multilabel
         classification, for which inference procedure has to be sped up.
-
         This means that we need to first build a decent classifier, then plug in our approximate algorithms,
         and finally benchmark the whole system.
 
@@ -70,12 +68,12 @@
         out algorithms and reference Faiss library can only cope with such representations.
 
         We have experimented with several models, including deep neural networks, but finally decided to
-        use \texttt{FastText}~\cite{fasttext} classifier. It is a very simple, yet powerfull architecture, that
+        use fastText~\cite{fasttext} classifier. It is a very simple, yet powerfull architecture, that
         can be efficiently trained on very large datasets. Its speed comes from the fact that it uses an efficient,
         asynchronous, 1-bit stochastic gradient descent, and doesn't compute full softmax over the output space,
         but approximates it with a negative sampling~\cite{w2v}.
 
-        \texttt{FastText} takes an input example in a form of a sparse vector (in our case, each index in that vector
+        fastText takes an input example in a form of a sparse vector (in our case, each index in that vector
         represents a word in the input sentence), and computes its hidden, dense representation. Then, this
         representation is multiplied with a weight vector for each output class, giving us final predictions.
         This last step is exactly the MIPS problem we are discussing in this work.
@@ -92,8 +90,8 @@
         For completeness, we summarize the descriptive statistics of the used datasets in table~\ref{tab:dsz}.
 
         \begin{table}
-          \caption{Data statistics. $d$ is the dimensionality of the feature vectors. For Wiki and Amazon this
-          is the dimensionality of \texttt{FastText} hidden representation. $L$ is the number
+          \caption{Data statistics. $d$ is the dimensionality of the feature vectors. For Wiki-LSHTC and Amazon-3M this
+          is the dimensionality of fastText hidden representation. $L$ is the number
           of database vectors (for Wiki-LSHTC and Amazon-3M this is the number of labels). $n$ is the number of query vectors.}
           \label{tab:dsz}
           \centering
@@ -130,7 +128,7 @@
         (we have experimented with up to depth of $4$), number of centroids on each level,
         and the number of nodes that are expanded during search procedure.
 
-        For ALSH the most important parameters were number of hash tables $L$,
+        For ALSH the most important parameters were number of hash tables ($L$),
         and number of hash functions ($K$). The rest of the parameters was mostly kept fixed, following
         recommendations of the original ALSH paper.
 
