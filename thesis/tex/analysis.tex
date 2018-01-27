@@ -115,7 +115,9 @@ trees).
 The general trend is that the curves corresponding to lower $n_{train}$ perform
 better than other at high-speed, low-precision parts of the chart. In other
 words, if high precision is needed, high $n_{train}$ is a good choice (and vice
-versa).
+versa). Note that Auvolat version of this algorithm is equivalent to our
+generalization with $n_{train}$ fixed to $1$. For higher precision 
+scenarios, it usually performs worse than higher $n_{train}$ runs.
 
 This result is consistent with our theoretical calculations in Chapter 2.1, which
 were performed for the case of $n_{train} \approx n_{query}$ (and called simply $n$).

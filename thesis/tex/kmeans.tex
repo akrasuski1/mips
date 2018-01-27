@@ -219,8 +219,13 @@ just one. This would increase time complexity to
 $ O(\sqrt[L+1]{N} \cdot (L \cdot n + 1)) $, as all layers except of the top one
 will have on average $n$ times more candidates to check.
 
-When checking more than one centroid at each layer, the optimal (in terms
-of inner products performed) sizes of clusters change. Let $ K_L $ denote
+Auvolat suggests in \cite{kmeans} to use $N^{\frac{L+i-1}{L+1}}$ as cluster
+sizes. We note however, that when checking more than one centroid at each layer, 
+the optimal (in terms
+of inner products performed) sizes of clusters change. Our contribution,
+analysis of $n>1$ case, follows.
+
+Let $ K_L $ denote
 number of centroids in the top layer, $ K_{L-1} $ the one below, up to
 $ K_1 $ meaning the number of centroids in the bottom layer, and $ K_0 $, by 
 convention, meaning the number of all data vectors (equal $N$). The total number of
