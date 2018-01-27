@@ -3,16 +3,16 @@
 
 Our library contains a number of dependencies. Most importantly, the core components rely on 
 another library for \textit{Approximate Similarity Search}, Faiss \cite{faiss}.
-Faiss in turn depends on Basic Linear Algebra Subprograms (BLAS) being available. In our experiments we have used
-the \texttt{OpenBLAS} \cite{openblas} implementation, as it is fully open-source and easiest to install. One
+Faiss in turn depends on Basic Linear Algebra Subprograms (BLAS) \remark{being available: w jakim znaczeniu}. In our experiments we have used
+the \texttt{OpenBLAS} \cite{openblas} implementation, as it is fully open-source and easiest \remark{easier?} to install. One
 could obtain slightly improved performance with proprietary \texttt{MKL} \cite{mkl} implementation, but this would require
-users to perform extra installtion steps.
+users to perform extra installation steps.
 
-Additionally, the Python parts of our code rely on several components: \texttt{pybind11} and \texttt{swig}
+Additionally, the Python part of our code relies on several components: \texttt{pybind11} and \texttt{swig}
 for bindings generation, standard data-science tools like \texttt{pandas} for data analysis, and naturally, on the
 libraries that we create wrappers for. For more details we refer the reader to the \hyperref[sec:appendices]{appendix}.
 
-\subsection{Build System}
+\subsection{Building of the system}
 
 Given a moderate size of our project, we decided to use \texttt{make} as our building tool. The \texttt{Makefile} we use
 depends on variables set in configurable \texttt{makefile.inc}. Details regarding the build process can be found in the appendix.
@@ -26,13 +26,13 @@ for example we heavily reuse their fast inner product routines.
 A couple of provided routines for fast vector operations, such as inner product calculation, can
 operate in batch mode to increase speed. Vectors to be used in calculation are then concatenated
 to a contiguous array --- this makes sense, as it increases memory locality in comparison
-to ``vector of vectors'' way, where pointer indirection would be involved. Using such a data structure
+to the ``vector of vectors'' approach, where the pointer indirection would be involved. Using such a data structure
 is quite error prone though, as one has to manually calculate offsets into the array. To improve
-usability, we abstracted it to a \texttt{FlatMatrix} structure, which provides matrix-like API, while
-still storing data in single array. The underlying data storage is also accessible through a method,
+usability, we abstracted it to a \texttt{FlatMatrix} structure, which provides a matrix-like API, while
+still storing data in a single array. The underlying data storage is also accessible through a method,
 so that it can be used for highly optimized Faiss functions.
 
-Querying is carried out in parallel using available number of processor cores.
+Querying is carried out in parallel using the available number of processor cores.
 It is accomplished by an OpenMP directive
 before the loop iterating through queries ensuring high scalability in situations
 where many queries have to be answered at once.
@@ -49,8 +49,8 @@ Additionally, one needs to provide only a single C++ source file to create these
 a big advantage compared to e.g. \texttt{SWIG}.
 
 NumPy is an extremely popular Python library for scientific computing, and is the backbone of all
-machine learning libraries in use today. NumPy’s main object is the homogeneous multidimensional array, which
-can be used to hold for example weights of a trained classifier. If we wanted to use our C++ indexes on such
+machine learning libraries in use today. NumPy’s main object is a homogeneous multidimensional array, which
+can be used to hold, for example, weights of a trained classifier. If we wanted to use our C++ indexes on such
 objects, it was crucial to be able to pass them without copying the underlying storage.
 
 Luckily it is quite straightforward in \texttt{pybind11} to write wrappers that can accept a NumPy array
@@ -58,7 +58,7 @@ and extract a raw C pointer to its data. Conversely, it is also straightforward 
 a NumPy array from a raw pointer returned by a C function. This array is then able to take the
 ownership of this pointer and realease it upon being garbage collected.
 
-In all of our function we release the \texttt{GIL} --- Python's Global Interpreter Lock. This means that while our
+In all of our functions we release the \texttt{GIL} --- Python's Global Interpreter Lock. This means that while our
 C++ is executing, Python interpreter is free to run other tasks. Once our C++ code returns, the
 interpreter lock is re-aquired.
 

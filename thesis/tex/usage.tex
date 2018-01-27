@@ -1,7 +1,7 @@
 Since we wanted our library to be acceessible to a wider public, we have prepared
 a set of tools to help users apply our algorithms in real world settings. More specifically,
 we have focused on three main aspects: creating bindings to a high-level programming language,
-plugging our algorithms to popular tools like \texttt{scikit-learn}, and providing a set
+plugging our algorithms to popular tools like scikit-learn, and providing a set
 of examples of how our code can be used.
 
 We have decided to prepare bindings to a Python language. To do this, we used
@@ -11,23 +11,23 @@ We note however that it is trivial to expand those bindings to also expose inter
 structs and methods of each class.
 
 When it comes to using these bindings in real-world settings, we have prepared examples
-in two major machine learning frameworks available in Python --- \texttt{pytorch}
-and \texttt{scikit-learn}.
+in two major machine learning frameworks available in Python --- PyTorch
+and scikit-learn.
 
-In \texttt{scikit-learn} all linear classifiers, regardless of the way they are trained
+In scikit-learn all linear classifiers, regardless of the way they are trained
 or loss they minimize, inherit from a single base class --- \texttt{LinearClassifierMixin}.
 It was therefore enough to provide our own implementation of this mixin. This implementation
 only differs in behaviour at prediction time --- it first trains an internal index on the
 weight matrix, and then uses it to efficiently return top-$k$ highest rank classes.
 
-In \texttt{PyTorch} we provide an implementation of a \texttt{ApproximateLinear} layer.
-At train time this layer falls back to standard \texttt{pytorch} implementation, meaning
+In PyTorch we provide an implementation of a \texttt{ApproximateLinear} layer.
+At train time this layer falls back to standard PyTorch implementation, meaning
 it can utilize the GPU acceleration. However, when prediction mode is enabled, we first
 automatically train the index on the layer's weight matrix, and then provide a user with
 a choice --- one can either use the layer as a standard \texttt{Linear}, or use it
 to retrieve approximate top-$k$ output values.
 
-We also provide a patch that adds our index to \texttt{FastText} text classification model.
+We also provide a patch that adds our index to fastText\remark{, a popular tool for text classification.}
 We have used this model to perform experiments on Wiki-LSHTC and Amazon-3M datasets.
-Since \texttt{FastText} is a command-line only utility, we have added \texttt{train-index}
+Since fastText is a command-line only utility, we have added \texttt{train-index}
 and \texttt{approximate}-\texttt{predict} options available to users.
