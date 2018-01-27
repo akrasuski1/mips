@@ -28,5 +28,13 @@ parameter, determining tree shape, could not be set to even lower real values.
 Extrapolating from our tests, we would expect to achieve even higher speedups
 (probably with some small precision loss).
 
-[TODO] Weź ktoś napisz o tym że są fajne zastosowania, @marcin, że można w
-pythonie (łatwo!) przyspieszać i że jesteśmy fajni... \remark{No właśnie. Napiszcie to :)}
+Additionally, we have prepared a set easy-to-use, high level abstractions available in a popular
+scripting language --- Python. This allows end-users to apply our solutions in real-world, machine
+learning applications.
+
+We have provided both a general-purpose Python wrappers, as well as three dedicated plugins for popular machine
+learning libraries: \texttt{PyTorch}, \texttt{scikit-learn} and \texttt{FastText}. The former allows users to plug
+the algorithms into any exisitng workflow that requires solivng the MIPS problem, while the latter can serve both
+as an example of how to do this in practice, as well as a drop-in replacement for tools in the aforementioned libraries.
+
+

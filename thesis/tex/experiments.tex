@@ -1,4 +1,4 @@
-\section{\remark{Design of the experiments}}\label{sec:experimentalDesign}
+\section{Design of the experiments}\label{sec:experimentalDesign}
 
     We have conducted extensive experiments to evaluate performance of our algorithms. We have used
     four different datasets, described in detail in section~\ref{subsec:datasets}, and compared
@@ -17,23 +17,22 @@
         \texttt{Precision@}$k$ (P@$k$) can be intuitively described as a
         ``number of relevant items in the list of $k$ returned items, divided by $k$''.
 
-\remark{More formally, given a vector $\hat{\mathbf y} \in {\mathcal{R}}^{L}$ of scores assigned to each item, and a
-        binary vector $\mathbf y \in \left\lbrace 0, 1 \right\rbrace^L$ indicating which items are relevant }
-        we can write \remark{
+        More formally, given a vector $\hat{\mathbf y} \in {\mathcal{R}}^{L}$ of scores assigned to each item, and a
+        binary vector $\mathbf y \in \left\lbrace 0, 1 \right\rbrace^L$ indicating which items are relevant
+        we can write
 %
         \begin{equation*}
             \text{P}@k := \frac{1}{k} \sum_{l\in \text{rank}_k (\hat{\mathbf y})} y_l
         \end{equation*}
 %
         where $\text{rank}_k(\hat {\mathbf y})$ returns indices of $k$ labels with the highest scores in $\hat{\mathbf y}$.
-}
 
         We have decided not to focus on the training time of the evaluated indices. This
         decision is motivated by the fact, that in most practical use-cases, where
         approximate inference methods will be used, the training time is a one-time cost that
         often can be amortized (e.g by using more compute-power).
         Inference in these cases, however, is the time-sensitive component
-        that cannot be easily sped-up (e.g the inference happens \remark{in real-time} on a mobile device, or a small web-server).
+        that cannot be easily sped-up (e.g the inference happens in real-time on a mobile device, or a small web-server).
 
     \subsection{Datasets}\label{subsec:datasets}
 
@@ -64,18 +63,32 @@
 
         We note that there are some constraints when it comes to the choice of the classifier. The first condition
         is that the model should be bottlenecked by a large number of inner products that have to be performed during
-        inference step. The second is that these inner products should only deal with dense vectors, since both the reference Faiss library and our algorithms can only cope with such representation.
+        inference step. The second is that these inner products should only deal with dense vectors,
+        since both the reference Faiss library and our algorithms can only cope with such representation.
 
         We have experimented with several models, including deep neural networks, but finally decided to
         use the fastText~\cite{fasttext} classifier. It is a very simple, yet powerfull architecture, that
         can be efficiently trained on very large datasets. Its speed comes from the fact that it uses an efficient,
-        asynchronous, 1-bit stochastic gradient descent, and doesn't compute full softmax over the output space,
-        but approximates it with a negative sampling~\cite{w2v}.\remark{czytelnik nie będzie wiedział o co tutaj chodzi; trzeba to napisać albo bardziej ogólnie, albo wytłumaczyć każdy z pojawiających się tutaj elementów}
+        asynchronous, stochastic gradient descent, and doesn't compute full softmax over the output space,
+        but approximates it with a negative sampling~\cite{w2v}.
 
-        fastText takes an input example in a form of a sparse vector (in our case, each index in that vector
-        represents a word in the input sentence), and computes its hidden, dense representation. Then, this
-        representation is multiplied with a weight vector for each output class, giving the final prediction.
-        This last step is exactly the MIPS problem we are discussing in this work. \remark{można byłoby porównać Wasze podejście z HSM}
+        Here, by stochastic gradient descent we mean a training procedure, in which weights of the model are updated
+        after observing each sample in the dataset. This is in contrast with popular in deep learning
+        mini-batch gradient descent, where a gradient is averaged over a number of samples (a mini-batch),
+        and only then the update step is performed.
+
+        We write that we use asynchronous gradient decent, since during trainin a number of threads is spawned. Each
+        of those threads computes its own gradients, but updates a shared weight matrix. This is done without any
+        form of synchronization.
+
+        Finally, negative sampling is a technique used for training models with large numbers of output classess, where
+        for each example and a set of positive labels, only a small set of negative labels is sampled from the dataset.
+        This is in contrast with, for example, softmax, which uses positive and all negative labels to compute the loss.
+
+        As for the model itself, fastText takes an input example in a form of a sparse vector
+        (in our case, each index in that vector represents a word in the input sentence), and computes its hidden,
+        dense representation. Then, this representation is multiplied with a weight vector for each output class,
+        giving the final prediction. This last step is exactly the MIPS problem we are discussing in this work.
 
         Naturally, we wanted to use our approximate algorithms to avoid computing dot product between a hidden
         representation and a weight vector for each class. To be sure that our timings are as accurate as possible,
@@ -86,7 +99,7 @@
         it was now straightforward to perfom experiments --- we just treated the weight vectors as our database vectors,
         and hidden representations as query vectors.
 
-        For completeness, we summarize the descriptive statistics of the used datasets in \remark{Table~\ref{tab:dsz}}.
+        For completeness, we summarize the descriptive statistics of the used datasets in Table~\ref{tab:dsz}.
 
         \begin{table}
           \caption{Data statistics: $d$ is the dimensionality of the feature vectors (for Wiki-LSHTC and Amazon-3M this
@@ -136,9 +149,8 @@
 
         For a more detailed explanation of the parameters mentioned above, please see the sections
         dedicated to each of the algorithms.
-        We provide the exact parameters used in the Appendix \remark{(TODO)???}.
 
-    \subsection{\remark{Amazon Web Services}}
+    \subsection{Amazon Web Services}
 
         All of our experiments were conducted using the Amazon Web Services infrastructure.
         More concretely we have used compute-optimized \texttt{c4.4xlarge} instances. Each such
