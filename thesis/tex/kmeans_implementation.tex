@@ -1,4 +1,5 @@
-\remark{Structure implementing this algorithm? A structure used by the hierarchical $k$-means algorithm contains mostly the results of hierarchical clustering.} contains mostly the hierarchical clustering results.
+A structure used by the hierarchical $K$-means algorithm contains mostly the results of 
+hierarchical clustering.
 Since most of the querying time is spent walking through this tree, effort has been made
 to optimize it.
 
@@ -16,7 +17,8 @@ optimization was found to speed up the computations approximately twice.
 
 As for querying implementation, the algorithm is mostly a direct translation of the pseudocode
 described in the theoretical part of the thesis. The only significant modification is 
-that our implementation looks for more than one best centroid or final point \remark{w części teoretycznej jest wspomniany algorytm z przeszukiwaniem $n$ poddrzew}, so a
+that our implementation looks for more than one best centroid or final point
+(as described in Chapter 2.1), so a
 fixed-size priority queue is used to remember the best candidates. Each time an inner
 product of query with a new candidate is calculated, it is added to the queue.
 Then, if the queue size is bigger than specified capacity, the smallest product is
