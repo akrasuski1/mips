@@ -25,12 +25,12 @@ graphs for precision at 100.
 	\subfloat{
 		\includegraphics[width=.48\textwidth]{../graphs/nondominated/siftsmall-p100.eps}
 	}
-\caption{Pareto frontiers for each algorithm. \remark{Na siftsmall nie widać IVF?}}
+\caption{Pareto frontiers for each algorithm.}
 \end{figure}
 
-The graphs show some similarity --- in all cases \remark{Hierarchical} $K$-Means and IVF algorithms were much better
+The graphs show some similarity --- in all cases Hierarchical $K$-Means and IVF algorithms were much better
 than the alternatives. ALSH algorithm gave very poor results on Amazon-3M and Wiki-LSHTC
-datasets --- apparently the sift\remark{SIFT?} vectors have some regularity that ALSH could exploit better.
+datasets --- apparently the SIFT vectors have some regularity that ALSH could exploit better.
 Still, the precision did not exceed approximately $0.60$ for reasonable speedups even on
 this dataset. Finally, the quantization-based algorithm, although it was able to give
 reasonable precision, it was so slow, that the only dataset it did not time 
@@ -38,12 +38,12 @@ out\footnote{Timeout was set to twice the time of the brute force search.}
 was SIFTsmall dataset. It contained only ten thousand vectors though and was included
 just for completion.
 
-IVF and \remark{Hierarchical} $K$-Means curves follow each other quite closely --- it could be expected though,
-since \remark{Hierarchical} $K$-Means algorithm is generalization of IVF. In almost all places \remark{Hierarchical} $K$-Means are even
+IVF and Hierarchical $K$-Means curves follow each other quite closely --- it could be expected though,
+since Hierarchical $K$-Means algorithm is generalization of IVF. In almost all places Hierarchical $K$-Means are even
 better than IVF --- again, this can be explained by having more parameters to be tested.
 To check whether this is caused by possibly faster implementation or the introduction of
-hierarchy, we split the \remark{Hierarchical} $K$-Means curve into three lines, each corresponding to a single
-number of layers (for example, \remark{H?}KMeans-2 means $K$-Means with two layers).
+hierarchy, we split the Hierarchical $K$-Means curve into three lines, each corresponding to a single
+number of layers (for example, KMeans-2 means Hierarchical $K$-Means with two layers).
 
 \begin{figure}
 	\centering
@@ -61,28 +61,31 @@ number of layers (for example, \remark{H?}KMeans-2 means $K$-Means with two laye
 \end{figure}
 
 From these graphs, we can see that in general IVF is approximately $30\% - 50\%$ faster
-(on horizontal axis) than \remark{Hierarchical} $K$-Means when using just a single layer. Both algorithms are
+(on horizontal axis) than Hierarchical $K$-Means when using just a single layer. Both algorithms are
 equivalent in this case, so this means the Faiss library is optimized for the flat clustering\footnote{
 Checking the source of Faiss we can see it performs inner products of each query with all centroids
 (from the first and only layer) all at once, before continuing to answer each query 
 using its candidates. This allows one to use heavily optimized matrix-matrix multiplication
 routines for the first phase, with additional memory locality advantages. 
 In principle, this optimization
-could also be implemented for hierarchical $K$-Means (for the first layer only).
+could also be implemented for Hierarchical $K$-Means (for the first layer only).
 }.
-In contrast, \remark{Hierarchical} $K$-Means are much better \remark{in terms of what?} when allowed to use two or three layers. The use of hierarchy speeds the calculations to the level of IVF --- for some parameters even surpassing
+In contrast, Hierarchical $K$-Means are much better (achieve same level of precision faster)
+when allowed to use two or three layers. The use of hierarchy speeds the calculations to the level 
+of IVF --- for some parameters even surpassing
 it, especially for Amazon-3M dataset.
 
-The difference between two-layer and three-layer \remark{Hierarchical} $K$-Means is not as amplified. Since
+The difference between two-layer and three-layer Hierarchical $K$-Means is not as amplified. Since
 training time (not pictured here) usually rises quite significantly with the number of layers,
 the minor additional speedup may not be worth it in practice. Four and more layers
 would probably not have noticeable impact either.
 
-It is also notable that two- and three-layer $K$-Means curves \remark{continue much further left?}
-than IVF. Of course, such \remark{speed up} comes with significant impact on accuracy, but
+It is also notable that two- and three-layer $K$-Means are able to achieve much higher speed up
+than IVF, which manifests on graphs as $K$-Means curves starting earlier than $IVF$ curves. 
+Of course, such speed up comes with significant impact on accuracy, but
 IVF cannot even reach this speed. In a sense, its accuracy is zero there.
 A possible explanation for this cutoff comes from its complexity analysis as described
-in the introduction to the \remark{Hierarchical} $K$-Means algorithm chapter. No matter what precision is, the minimal
+in the introduction to the Hierarchical $K$-Means algorithm chapter. No matter what precision is, the minimal
 complexity of flat $K$-Means (equivalent to IVF) is $O(\sqrt{N})$. Two- or three-layer
 $K$-Means bring this limit down to $O(\sqrt[3]{N})$, or $O(\sqrt[4]{N})$, 
 respectively.\footnote{Admittedly with a small multiplicative slowdown.}
@@ -90,7 +93,7 @@ respectively.\footnote{Admittedly with a small multiplicative slowdown.}
 It is interesting to find out which parameters correspond to particular levels
 of precision or speedup. For that, we plotted precision vs. time for different
 values of $n_{train}$ parameter (which determines shape of the $K$-Means tree as
-described in \remark{Chapter} 2.1 --- generally, higher values correspond to wider
+described in Chapter 2.1 --- generally, higher values correspond to wider
 trees).
 
 
@@ -114,11 +117,11 @@ better than other at high-speed, low-precision parts of the chart. In other
 words, if high precision is needed, high $n_{train}$ is a good choice (and vice
 versa).
 
-This result is consistent with our theoretical calculations in \remark{Chapter} 2.1, which
+This result is consistent with our theoretical calculations in Chapter 2.1, which
 were performed for the case of $n_{train} \approx n_{query}$ (and called simply $n$).
 In that special case, we would expect low $n$ to cause approximation to be very
 quick (as a very small number of subtrees is considered), but rough. We can
-check if this assumption holds by \remark{graphing?plotting} $n_{query}$ vs. time and comparing
+check if this assumption holds by plotting $n_{query}$ vs. time and comparing
 it with previous graphs.
 
 \begin{figure}

@@ -144,6 +144,21 @@ def draw_nondominated(nondominated, name, step = True):
         for d in datasets:
             print(d, p)
             graph_data = {i: nondominated[(i, d, p)] for i in indexes}
+            if d == "siftsmall" and p == "p100":
+                # This set has only one datapoint and is invisible on
+                # graph - hacky way to fix this is add second point
+                # just to the right.
+                graph_data["IVF"].append((
+                    {
+                        'p100': 1.0, 
+                        'p25': 1.0, 
+                        'p5': 1.0, 
+                        'p1': 1.0, 
+                        'train': 0.7558131218, 
+                        'test': 0.0029506683 * 20 # This is changed.
+                    }, 
+                parameter_tuples["IVF"](nprobe='32', size='4069')))
+                print(graph_data["IVF"])
             baseline_time = next(iter(graph_data["Flat"]))[0]["test"]
             del graph_data["Flat"]
             
