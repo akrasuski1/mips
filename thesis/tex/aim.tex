@@ -16,11 +16,11 @@ Every item is mathematically represented by a vector, with all vector's componen
 Unfortunately, when one has to compare the query with hundreds of thousands of vectors,
 a linear search time can become prohibitively expensive.
 In other words comparing query and every database vector may not be feasible in practical applications.
-To counter that, proposals were made in several articles to build a kind of an \textit{index} for speeding
+To counter that, proposals were made in several articles to build an \textit{index} for speeding
 up the searching time.
 This index is essentially a specific data structure built by preprocessing database vectors (before
 any of the queries are answered --- this is a one-time cost).
-The most important feature of the index is short prediction (searching) time, training (index preparation)
+The most important feature of the index is short prediction (searching) time; training (index preparation)
 can last much longer if needed.
 It is not always necessary for the exact result to be returned --- it can often be approximate.
 In this thesis we focus on such algorithms --- they trade some prediction precision for speed.
