@@ -27,7 +27,7 @@ automatically train the index on the layer's weight matrix, and then provide a u
 a choice --- one can either use the layer as a standard \texttt{Linear}, or use it
 to retrieve approximate top-$k$ output values.
 
-We also provide a patch that adds our index to fastText text classification model.
+We also provide a patch that adds our index to fastText\remark{, a popular tool for text classification.}
 We have used this model to perform experiments on Wiki-LSHTC and Amazon-3M datasets.
 Since fastText is a command-line only utility, we have added \texttt{train-index}
 and \texttt{approximate}-\texttt{predict} options available to users.

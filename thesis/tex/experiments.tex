@@ -1,4 +1,4 @@
-\section{Experimental Design}\label{sec:experimentalDesign}
+\section{\remark{Design of the experiments}}\label{sec:experimentalDesign}
 
     We have conducted extensive experiments to evaluate performance of our algorithms. We have used
     four different datasets, described in detail in section~\ref{subsec:datasets}, and compared
@@ -17,22 +17,23 @@
         \texttt{Precision@}$k$ (P@$k$) can be intuitively described as a
         ``number of relevant items in the list of $k$ returned items, divided by $k$''.
 
-        More formally, given a vector of scores assigned to each item $\hat{\mathbf y} \in {\mathcal{R}}^{L}$, and a
-        binary vector indicating which items are relevant $\mathbf y \in \left\lbrace 0, 1 \right\rbrace^L$
-        we can write
-
+\remark{More formally, given a vector $\hat{\mathbf y} \in {\mathcal{R}}^{L}$ of scores assigned to each item, and a
+        binary vector $\mathbf y \in \left\lbrace 0, 1 \right\rbrace^L$ indicating which items are relevant }
+        we can write \remark{
+%
         \begin{equation*}
-            \text{P}@k := \frac{1}{k} \sum_{l\in \text{rank}_k (\hat{\mathbf y})} \mathbf y_l
+            \text{P}@k := \frac{1}{k} \sum_{l\in \text{rank}_k (\hat{\mathbf y})} y_l
         \end{equation*}
-
-        where $\text{rank}_k(\mathbf y)$ returns the $k$ largest indices of $y$ ranked in descending order.
+%
+        where $\text{rank}_k(\hat {\mathbf y})$ returns indices of $k$ labels with the highest scores in $\hat{\mathbf y}$.
+}
 
         We have decided not to focus on the training time of the evaluated indices. This
-        descision is motivated by the fact, that in most practical use-cases, where
+        decision is motivated by the fact, that in most practical use-cases, where
         approximate inference methods will be used, the training time is a one-time cost that
         often can be amortized (e.g by using more compute-power).
         Inference in these cases, however, is the time-sensitive component
-        that cannot be easily sped-up (e.g the inference happens on a mobile device, or a small web-server).
+        that cannot be easily sped-up (e.g the inference happens \remark{in real-time} on a mobile device, or a small web-server).
 
     \subsection{Datasets}\label{subsec:datasets}
 
@@ -48,8 +49,7 @@
         that point to the closest (according to $L_2$ distance) vectors in the database.
 
         First of all, for every query, we consider only the first vector in the groundtruth as relevant.
-        Secondly, we recompute the groundtruth indices so that they're sorted accroding to inner-product
-        metric.
+        Secondly, we recompute the groundtruth indices so that they're sorted accroding to the inner-product.
 
         For the two remaining datasets, we have used Wiki-LSHTC~\cite{lshtc} and
         Amazon-3M~\cite{a3m} datasets, publicly available at~\cite{exrepo}.
@@ -57,26 +57,25 @@
         but at the same time pose several challanges.
 
         The reason these datasets are more meaningful than SIFT is because they allow us to test our
-        algorithms in a real-world setting, where there is a linear model trained to perfrom a multilabel
-        classification, for which inference procedure has to be sped up.
+        algorithms in a real-world setting, where there is a linear model trained to perform multilabel
+        classification, for which the inference procedure has to be sped up.
         This means that we need to first build a decent classifier, then plug in our approximate algorithms,
         and finally benchmark the whole system.
 
         We note that there are some constraints when it comes to the choice of the classifier. The first condition
         is that the model should be bottlenecked by a large number of inner products that have to be performed during
-        inference step. The second is that these inner products should only deal with dense vectors, since both
-        out algorithms and reference Faiss library can only cope with such representations.
+        inference step. The second is that these inner products should only deal with dense vectors, since both the reference Faiss library and our algorithms can only cope with such representation.
 
         We have experimented with several models, including deep neural networks, but finally decided to
-        use fastText~\cite{fasttext} classifier. It is a very simple, yet powerfull architecture, that
+        use the fastText~\cite{fasttext} classifier. It is a very simple, yet powerfull architecture, that
         can be efficiently trained on very large datasets. Its speed comes from the fact that it uses an efficient,
         asynchronous, 1-bit stochastic gradient descent, and doesn't compute full softmax over the output space,
-        but approximates it with a negative sampling~\cite{w2v}.
+        but approximates it with a negative sampling~\cite{w2v}.\remark{czytelnik nie będzie wiedział o co tutaj chodzi; trzeba to napisać albo bardziej ogólnie, albo wytłumaczyć każdy z pojawiających się tutaj elementów}
 
         fastText takes an input example in a form of a sparse vector (in our case, each index in that vector
         represents a word in the input sentence), and computes its hidden, dense representation. Then, this
-        representation is multiplied with a weight vector for each output class, giving us final predictions.
-        This last step is exactly the MIPS problem we are discussing in this work.
+        representation is multiplied with a weight vector for each output class, giving the final prediction.
+        This last step is exactly the MIPS problem we are discussing in this work. \remark{można byłoby porównać Wasze podejście z HSM}
 
         Naturally, we wanted to use our approximate algorithms to avoid computing dot product between a hidden
         representation and a weight vector for each class. To be sure that our timings are as accurate as possible,
@@ -87,12 +86,12 @@
         it was now straightforward to perfom experiments --- we just treated the weight vectors as our database vectors,
         and hidden representations as query vectors.
 
-        For completeness, we summarize the descriptive statistics of the used datasets in table~\ref{tab:dsz}.
+        For completeness, we summarize the descriptive statistics of the used datasets in \remark{Table~\ref{tab:dsz}}.
 
         \begin{table}
-          \caption{Data statistics. $d$ is the dimensionality of the feature vectors. For Wiki-LSHTC and Amazon-3M this
-          is the dimensionality of fastText hidden representation. $L$ is the number
-          of database vectors (for Wiki-LSHTC and Amazon-3M this is the number of labels). $n$ is the number of query vectors.}
+          \caption{Data statistics: $d$ is the dimensionality of the feature vectors (for Wiki-LSHTC and Amazon-3M this
+          is the dimensionality of the fastText hidden representation), $L$ is the number
+          of database vectors (for Wiki-LSHTC and Amazon-3M this is the number of labels), and $n$ is the number of query vectors.}
           \label{tab:dsz}
           \centering
           {
@@ -117,7 +116,7 @@
         really well in settings similar to ours --- where we are not memory constrained, and whole dataset
         can fit in memory.
         Secondly, this algorithm is a special case of our hierarchical $K$-means, specifically
-        it is equivalent to hierarchical $K$-means with number of layers set to $1$.
+        it is equivalent to hierarchical $K$-means with the number of layers set to $1$.
 
     \subsection{Parameter grid}\label{subsec:parameterGrid}
 
@@ -125,23 +124,23 @@
         each algorithm, and were able to design a grid of sensible parameters for each of them.
 
         For hierarchical $K$-means the core parameters are of course the depth of the hierarchy
-        (we have experimented with up to depth of $4$), number of centroids on each level,
+        (we have experimented with depth up to $4$), the number of centroids on each level,
         and the number of nodes that are expanded during search procedure.
 
-        For ALSH the most important parameters were number of hash tables ($L$),
-        and number of hash functions ($K$). The rest of the parameters was mostly kept fixed, following
+        For ALSH the most important parameters were the number of hash tables ($L$),
+        and the number of hash functions ($K$). The rest of the parameters was mostly kept fixed, following 
         recommendations of the original ALSH paper.
 
-        For quantization-based algorithm we have varied the number of subspaces as well as number of centroids
+        For the quantization-based algorithm we have varied the number of subspaces as well as the number of centroids
         in each subspace.
 
         For a more detailed explanation of the parameters mentioned above, please see the sections
         dedicated to each of the algorithms.
-        We provide the exact parameters used in the Appendix (TODO).
+        We provide the exact parameters used in the Appendix \remark{(TODO)???}.
 
-    \subsection{Amazon}
+    \subsection{\remark{Amazon Web Services}}
 
-        All of our experiments were conducted using Amazon Web Services infrastructure.
+        All of our experiments were conducted using the Amazon Web Services infrastructure.
         More concretely we have used compute-optimized \texttt{c4.4xlarge} instances. Each such
         instance provides $16$ virtual cores and $30$ gigabytes of RAM, and is powered
         by an Intel Xeon E5-2666 v3 (Haswell) processor optimized specifically for AWS.
